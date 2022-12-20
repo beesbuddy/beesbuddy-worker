@@ -1,0 +1,8 @@
+{
+  "AppName": "BeesBuddy Worker",
+  "AppHost": "0.0.0.0",
+  "AppPort": 4000,
+  "IsPrefork": false,
+	"IsProd": false,
+  "BrokerTCPUrl": "tcp://mqtt.eclipseprojects.io:1883"
+}
