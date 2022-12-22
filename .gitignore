@@ -29,3 +29,6 @@ test.default.json
 
 # Blacklist air configuration
 dev.toml
+
+# Air temp build directory
+/tmp/
