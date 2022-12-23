@@ -1,6 +1,7 @@
 package main
 
 import (
+	"embed"
 	"os"
 	"os/signal"
 	"syscall"
@@ -10,12 +11,19 @@ import (
 	MQTT "github.com/eclipse/paho.mqtt.golang"
 )
 
+//go:embed public/*.*
+//go:embed public/*/*.*
+var embedFS embed.FS
+
 func main() {
 	core.InitializeConfig()
 
 	app := core.NewApplication()
 	appRunner := cmd.NewApplicationRunner(app)
 	appRunner.Run()
+
+	ui := cmd.NewUIRunner(app, &embedFS)
+	ui.Run()
 
 	opts := MQTT.NewClientOptions().AddBroker(core.GetCfgModel().BrokerTCPUrl)
 	client := MQTT.NewClient(opts)

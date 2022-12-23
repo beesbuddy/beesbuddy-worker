@@ -1,3 +1,4 @@
+.DS_Store
 *.exe
 *.exe~
 *.dll
@@ -32,3 +33,6 @@ dev.toml
 
 # Air temp build directory
 /tmp/
+
+# Ignore ui build directory
+/public/
