@@ -9,7 +9,7 @@ import (
 )
 
 func NewApplication() *fiber.App {
-	preFork := GetConfig().IsPrefork
+	preFork := GetCfgModel().IsPrefork
 
 	app := fiber.New(fiber.Config{Prefork: preFork})
 	app.Use(recover.New())

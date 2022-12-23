@@ -1,22 +1,27 @@
 package core
 
 import (
-	config "github.com/beesbuddy/beesbuddy-config"
 	"github.com/beesbuddy/beesbuddy-worker/internal/model"
+	config "github.com/leonidasdeim/goconfig"
 )
 
-var appConfig *model.Config
+var configModel *model.Config
+var appConfig *config.Config[model.Config]
 
-func GetConfig() *model.Config {
+func GetCfgModel() *model.Config {
+	return configModel
+}
+
+func GetAppCfgObject() *config.Config[model.Config] {
 	return appConfig
 }
 
 func InitializeConfig() {
-	initializedConfig, error := config.Init[model.Config](config.WithName("dev"))
+	appConfig, err := config.Init[model.Config](config.WithName("dev"))
 
-	if error != nil {
+	if err != nil {
 		panic("Unable to load config")
 	}
 
-	appConfig = initializedConfig.GetCfg()
+	configModel = appConfig.GetCfg()
 }

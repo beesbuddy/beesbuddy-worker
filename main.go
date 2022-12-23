@@ -17,7 +17,7 @@ func main() {
 	appRunner := cmd.NewApplicationRunner(app)
 	appRunner.Run()
 
-	opts := MQTT.NewClientOptions().AddBroker(core.GetConfig().BrokerTCPUrl)
+	opts := MQTT.NewClientOptions().AddBroker(core.GetCfgModel().BrokerTCPUrl)
 	client := MQTT.NewClient(opts)
 	mqttClientRunner := cmd.NewMqttClientRunner(client)
 	mqttClientRunner.Run()

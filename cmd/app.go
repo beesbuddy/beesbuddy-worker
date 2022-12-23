@@ -19,10 +19,10 @@ func NewApplicationRunner(app *fiber.App) core.ModuleRunner {
 }
 
 func (mod *appModule) Run() {
-	config := core.GetConfig()
+	cfg := core.GetCfgModel()
 
 	go func() {
-		if err := mod.app.Listen(fmt.Sprintf("%s:%d", config.AppHost, config.AppPort)); err != nil {
+		if err := mod.app.Listen(fmt.Sprintf("%s:%d", cfg.AppHost, cfg.AppPort)); err != nil {
 			log.Panic(err)
 		}
 	}()
