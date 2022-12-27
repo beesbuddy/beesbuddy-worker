@@ -5,11 +5,11 @@ import (
 	config "github.com/leonidasdeim/goconfig"
 )
 
-var configModel *model.Config
+var configModel model.Config
 var appConfig *config.Config[model.Config]
 
 func GetCfgModel() *model.Config {
-	return configModel
+	return &configModel
 }
 
 func GetAppCfgObject() *config.Config[model.Config] {
