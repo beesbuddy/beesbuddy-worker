@@ -16,7 +16,7 @@ import (
 var embedFS embed.FS
 
 func main() {
-	core.InitializeConfig()
+	core.InitializeCfg()
 
 	app := core.NewApplication()
 	appRunner := cmd.NewApplicationRunner(app)
