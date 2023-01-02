@@ -12,17 +12,17 @@ import (
 func main() {
 	app := core.NewApplication()
 
-	appRunner := cmd.NewWebRunner(app)
-	appRunner.Run()
+	webRunner := cmd.NewWebRunner(app)
+	webRunner.Run()
 
-	mqttClientRunner := cmd.NewMqttClientRunner(app)
-	mqttClientRunner.Run()
+	workersRunner := cmd.NewWorkersRunner(app)
+	workersRunner.Run()
 
 	interrupt := make(chan os.Signal, 1)
 	signal.Notify(interrupt, os.Interrupt, syscall.SIGTERM)
 
 	<-interrupt
 
-	mqttClientRunner.CleanUp()
-	appRunner.CleanUp()
+	workersRunner.CleanUp()
+	webRunner.CleanUp()
 }
