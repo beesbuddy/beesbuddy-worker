@@ -36,3 +36,4 @@ dev.toml
 
 # Ignore ui build directory
 /public/
+node_modules

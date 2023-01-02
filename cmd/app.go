@@ -6,34 +6,35 @@ import (
 	"os"
 
 	"github.com/beesbuddy/beesbuddy-worker/internal/core"
-	"github.com/gofiber/fiber/v2"
 )
 
-type appModule struct {
-	app *fiber.App
+type appCmd struct {
+	app *core.App
 }
 
-func NewApplicationRunner(app *fiber.App) core.ModuleRunner {
-	module := &appModule{app: app}
+func NewApplicationRunner(app *core.App) core.CmdRunner {
+	module := &appCmd{app: app}
 	return module
 }
 
-func (mod *appModule) Run() {
-	cfg := core.GetCfgModel()
+func (cmd *appCmd) Run() {
+	cfg := core.GetCfg()
 
 	go func() {
-		if err := mod.app.Listen(fmt.Sprintf("%s:%d", cfg.AppHost, cfg.AppPort)); err != nil {
+		if err := cmd.app.Router.Listen(fmt.Sprintf("%s:%d", cfg.AppHost, cfg.AppPort)); err != nil {
 			log.Panic(err)
 		}
 	}()
 }
 
-func (mod *appModule) CleanUp() {
-	log.Println("Gracefully shutting down fiber...")
-	err := mod.app.Shutdown()
+func (cmd *appCmd) CleanUp() {
+	log.Println("Gracefully closing app...")
+	go func() {
+		err := cmd.app.Router.Shutdown()
 
-	if err != nil {
-		log.Panic(err)
-		os.Exit(1)
-	}
+		if err != nil {
+			log.Panic(err)
+			os.Exit(1)
+		}
+	}()
 }
