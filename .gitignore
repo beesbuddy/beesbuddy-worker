@@ -1,4 +1,4 @@
-.DS_Store
+
 *.exe
 *.exe~
 *.dll
@@ -35,5 +35,5 @@ dev.toml
 /tmp/
 
 # Ignore ui build directory
-/public/
+/static/
 node_modules
