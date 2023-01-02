@@ -3,22 +3,27 @@ module github.com/beesbuddy/beesbuddy-worker
 go 1.19
 
 require (
+	github.com/chmike/securecookie v1.3.4
 	github.com/eclipse/paho.mqtt.golang v1.4.2
 	github.com/gofiber/fiber/v2 v2.40.1
 	github.com/leonidasdeim/goconfig v1.3.5
+	github.com/petaki/support-go v1.6.0
 )
 
 require (
+	github.com/alexedwards/scs/v2 v2.5.0
 	github.com/andybalholm/brotli v1.0.4 // indirect
 	github.com/go-playground/locales v0.14.0 // indirect
 	github.com/go-playground/universal-translator v0.18.0 // indirect
 	github.com/go-playground/validator/v10 v10.11.1 // indirect
+	github.com/gofiber/adaptor/v2 v2.1.30
 	github.com/gorilla/websocket v1.5.0 // indirect
 	github.com/klauspost/compress v1.15.13 // indirect
 	github.com/leodido/go-urn v1.2.1 // indirect
 	github.com/mattn/go-colorable v0.1.13 // indirect
 	github.com/mattn/go-isatty v0.0.16 // indirect
 	github.com/mattn/go-runewidth v0.0.14 // indirect
+	github.com/petaki/inertia-go v1.4.0
 	github.com/rivo/uniseg v0.4.3 // indirect
 	github.com/valyala/bytebufferpool v1.0.0 // indirect
 	github.com/valyala/fasthttp v1.43.0 // indirect
