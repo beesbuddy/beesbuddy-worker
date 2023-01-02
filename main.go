@@ -12,11 +12,8 @@ import (
 func main() {
 	app := core.NewApplication()
 
-	appRunner := cmd.NewApplicationRunner(app)
+	appRunner := cmd.NewWebRunner(app)
 	appRunner.Run()
-
-	webRunner := cmd.NewWebRunner(app)
-	webRunner.Run()
 
 	mqttClientRunner := cmd.NewMqttClientRunner(app)
 	mqttClientRunner.Run()
@@ -26,7 +23,6 @@ func main() {
 
 	<-interrupt
 
-	webRunner.CleanUp()
 	mqttClientRunner.CleanUp()
 	appRunner.CleanUp()
 }

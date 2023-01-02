@@ -27,7 +27,7 @@ func newMixAndInertiaManager(debug bool, url string) (*mix.Mix, *inertia.Inertia
 
 	inertiaManager := inertia.NewWithFS(
 		url,
-		"app.gohtml",
+		"web.gohtml",
 		version,
 		views.Templates,
 	)
