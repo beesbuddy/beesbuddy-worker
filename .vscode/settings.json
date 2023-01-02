@@ -1,5 +1,0 @@
-{
-    "eslint.options": {
-        "configFile": "ui/babel.config.js"
-    }
-}
