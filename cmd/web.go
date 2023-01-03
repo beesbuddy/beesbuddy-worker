@@ -8,7 +8,7 @@ import (
 
 	c "github.com/beesbuddy/beesbuddy-worker/internal/core"
 	h "github.com/beesbuddy/beesbuddy-worker/internal/handlers"
-	"github.com/beesbuddy/beesbuddy-worker/static"
+	s "github.com/beesbuddy/beesbuddy-worker/static"
 	"github.com/gofiber/adaptor/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/fiber/v2/middleware/logger"
@@ -43,7 +43,7 @@ func (cmd *webCmd) Run() {
 	var fileServer http.Handler
 
 	if c.GetCfg().IsProd {
-		staticFS := http.FS(static.Files)
+		staticFS := http.FS(s.Files)
 		fileServer = http.FileServer(staticFS)
 	} else {
 		fileServer = http.FileServer(http.Dir("./static/"))
