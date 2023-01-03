@@ -7,7 +7,7 @@ import (
 	"os"
 
 	c "github.com/beesbuddy/beesbuddy-worker/internal/core"
-	handler "github.com/beesbuddy/beesbuddy-worker/internal/handler/web"
+	h "github.com/beesbuddy/beesbuddy-worker/internal/handler"
 	"github.com/beesbuddy/beesbuddy-worker/static"
 	"github.com/gofiber/adaptor/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
@@ -65,7 +65,7 @@ func (cmd *webCmd) Run() {
 	ui.Use(adaptor.HTTPMiddleware(func(next http.Handler) http.Handler {
 		return cmd.app.InertiaManager.Middleware(next)
 	}))
-	ui.Get("/", handler.HomeHandler(cmd.app))
+	ui.Get("/", h.HomeHandler(cmd.app))
 
 	go func() {
 		if err := cmd.app.Router.Listen(fmt.Sprintf("%s:%d", cfg.AppHost, cfg.AppPort)); err != nil {
