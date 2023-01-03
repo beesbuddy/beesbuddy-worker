@@ -6,29 +6,66 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/beesbuddy/beesbuddy-worker/internal/core"
+	c "github.com/beesbuddy/beesbuddy-worker/internal/core"
 	handler "github.com/beesbuddy/beesbuddy-worker/internal/handler/web"
+	"github.com/beesbuddy/beesbuddy-worker/static"
 	"github.com/gofiber/adaptor/v2"
+	"github.com/gofiber/fiber/v2/middleware/cors"
+	"github.com/gofiber/fiber/v2/middleware/logger"
+	"github.com/gofiber/fiber/v2/middleware/monitor"
+	"github.com/gofiber/fiber/v2/middleware/recover"
 )
 
 type webCmd struct {
-	app *core.App
+	app *c.App
 }
 
-func NewWebRunner(app *core.App) core.CmdRunner {
+func NewWebRunner(app *c.App) c.CmdRunner {
 	module := &webCmd{app: app}
 	return module
 }
 
 func (cmd *webCmd) Run() {
-	cfg := core.GetCfg()
+	cfg := c.GetCfg()
 
-	web := cmd.app.Router.Group("/")
-	web.Use(adaptor.HTTPMiddleware(func(next http.Handler) http.Handler {
-		return cmd.app.InertiaManager.Middleware(next)
+	router := cmd.app.Router
+
+	router.Use(recover.New())
+	router.Use(logger.New())
+	router.Get("/dashboard", monitor.New())
+	router.Use(cors.New(cors.Config{
+		AllowOrigins: "*",
+		AllowHeaders: "Origin, Content-Type, Accept",
 	}))
 
-	web.Get("/", handler.HomeHandler(cmd.app))
+	// Set up static file serving
+	var fileServer http.Handler
+
+	if c.GetCfg().IsProd {
+		staticFS := http.FS(static.Files)
+		fileServer = http.FileServer(staticFS)
+	} else {
+		fileServer = http.FileServer(http.Dir("./static/"))
+	}
+
+	router.Use("/css/", adaptor.HTTPMiddleware(func(next http.Handler) http.Handler {
+		return fileServer
+	}))
+	router.Use("/js/", adaptor.HTTPMiddleware(func(next http.Handler) http.Handler {
+		return fileServer
+	}))
+	router.Use("/images/", adaptor.HTTPMiddleware(func(next http.Handler) http.Handler {
+		return fileServer
+	}))
+	router.Use("/favicon.ico", adaptor.HTTPMiddleware(func(next http.Handler) http.Handler {
+		return fileServer
+	}))
+
+	ui := router.Group("/")
+	ui.Use(adaptor.HTTPMiddleware(func(next http.Handler) http.Handler {
+		return cmd.app.InertiaManager.Middleware(next)
+	}))
+	ui.Get("/", handler.HomeHandler(cmd.app))
 
 	go func() {
 		if err := cmd.app.Router.Listen(fmt.Sprintf("%s:%d", cfg.AppHost, cfg.AppPort)); err != nil {

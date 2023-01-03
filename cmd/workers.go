@@ -20,7 +20,7 @@ func (cmd *WorkersCmd) Run() {
 	m.NewConnection(cmd.app.MqttClient)
 
 	for {
-		log.Println("[Re]configuring RabbitMQ:", c.GetCfg().BrokerTCPUrl)
+		log.Println("[Re]configuring MQTT:", c.GetCfg().BrokerTCPUrl)
 
 		<-c.GetCfgObject().GetSubscriber(c.WorkerKey)
 	}
