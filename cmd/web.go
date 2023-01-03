@@ -7,7 +7,7 @@ import (
 	"os"
 
 	c "github.com/beesbuddy/beesbuddy-worker/internal/core"
-	h "github.com/beesbuddy/beesbuddy-worker/internal/handler"
+	h "github.com/beesbuddy/beesbuddy-worker/internal/handlers"
 	"github.com/beesbuddy/beesbuddy-worker/static"
 	"github.com/gofiber/adaptor/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
@@ -30,6 +30,7 @@ func (cmd *webCmd) Run() {
 
 	router := cmd.app.Router
 
+	// Set up base handlers / middleware
 	router.Use(recover.New())
 	router.Use(logger.New())
 	router.Get("/dashboard", monitor.New())
@@ -61,6 +62,7 @@ func (cmd *webCmd) Run() {
 		return fileServer
 	}))
 
+	// Set up ui and inertia for handling vue serving
 	ui := router.Group("/")
 	ui.Use(adaptor.HTTPMiddleware(func(next http.Handler) http.Handler {
 		return cmd.app.InertiaManager.Middleware(next)
