@@ -3,28 +3,30 @@ package cmd
 import (
 	"log"
 
-	"github.com/beesbuddy/beesbuddy-worker/internal/core"
+	c "github.com/beesbuddy/beesbuddy-worker/internal/core"
+	m "github.com/beesbuddy/beesbuddy-worker/internal/messaging"
 )
 
 type WorkersCmd struct {
-	app *core.App
+	app *c.App
 }
 
-func NewWorkersRunner(app *core.App) core.CmdRunner {
-	cmd := &WorkersCmd{app}
+func NewWorkersRunner(app *c.App) c.CmdRunner {
+	cmd := &WorkersCmd{app: app}
 	return cmd
 }
 
 func (cmd *WorkersCmd) Run() {
-	if token := cmd.app.MqttClient.Connect(); token.Wait() && token.Error() != nil {
-		panic(token.Error())
+	m.NewConnection(cmd.app.MqttClient)
+
+	for {
+		log.Println("[Re]configuring RabbitMQ:", c.GetCfg().BrokerTCPUrl)
+
+		<-c.GetCfgObject().GetSubscriber(c.WorkerKey)
 	}
 }
 
 func (cmd *WorkersCmd) CleanUp() {
 	log.Println("Gracefully closing mqtt workers...")
-
-	go func() {
-		cmd.app.MqttClient.Disconnect(250)
-	}()
+	m.Disconnect(cmd.app.MqttClient)
 }

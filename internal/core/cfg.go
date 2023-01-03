@@ -18,6 +18,8 @@ func GetCfgObject() *c.Config[models.Config] {
 func init() {
 	cfg, err := c.Init[models.Config](c.WithName("dev"))
 
+	cfg.AddSubscriber(WorkerKey)
+
 	if err != nil {
 		panic("Unable to load config")
 	}

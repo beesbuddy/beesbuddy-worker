@@ -7,7 +7,6 @@ import (
 	"github.com/petaki/support-go/forms"
 )
 
-// User type.
 type User struct {
 	ID            int       `json:"id" redis:"id"`
 	Username      string    `json:"username" redis:"username"`
@@ -18,7 +17,6 @@ type User struct {
 	CreatedAt     Timestamp `json:"created_at" redis:"created_at"`
 }
 
-// UserRepository type.
 type UserRepository interface {
 	Create(*User) error
 	Find(int) (*User, error)
@@ -30,14 +28,12 @@ type UserRepository interface {
 	Delete(*User) error
 }
 
-// NewUser function.
 func NewUser() *User {
 	return &User{
 		IsEnabled: true,
 	}
 }
 
-// UserCreateRules function.
 func UserCreateRules(form *forms.Form) {
 	form.Required("username", "email", "password", "is_enabled")
 	form.MatchesPattern("username", forms.UsernameRegexp)
@@ -47,7 +43,6 @@ func UserCreateRules(form *forms.Form) {
 	form.Min("password", 8)
 }
 
-// UserUpdateRules function.
 func UserUpdateRules(form *forms.Form) {
 	form.Required("username", "email", "is_enabled")
 	form.MatchesPattern("username", forms.UsernameRegexp)
@@ -57,7 +52,6 @@ func UserUpdateRules(form *forms.Form) {
 	form.Min("password", 8)
 }
 
-// Fill function.
 func (u *User) Fill(form *forms.Form) *User {
 	u.Username = form.Data["username"].(string)
 	u.Email = form.Data["email"].(string)
@@ -67,12 +61,10 @@ func (u *User) Fill(form *forms.Form) *User {
 	return u
 }
 
-// Gravatar function.
 func (u *User) Gravatar(size int) string {
 	return fmt.Sprintf("https://gravatar.com/avatar/%x?s=%d", md5.Sum([]byte(u.Email)), size)
 }
 
-// RememberCookie function.
 func (u *User) RememberCookie() []byte {
 	return []byte(fmt.Sprintf("%v|%s", u.ID, u.RememberToken))
 }
