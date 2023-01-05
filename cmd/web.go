@@ -6,14 +6,18 @@ import (
 	"net/http"
 	"os"
 
+	swagger "github.com/arsmn/fiber-swagger/v2"
+	"github.com/beesbuddy/beesbuddy-worker/docs"
 	c "github.com/beesbuddy/beesbuddy-worker/internal/core"
 	h "github.com/beesbuddy/beesbuddy-worker/internal/handlers"
 	s "github.com/beesbuddy/beesbuddy-worker/static"
 	"github.com/gofiber/adaptor/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
+	"github.com/gofiber/fiber/v2/middleware/limiter"
 	"github.com/gofiber/fiber/v2/middleware/logger"
 	"github.com/gofiber/fiber/v2/middleware/monitor"
 	"github.com/gofiber/fiber/v2/middleware/recover"
+	"github.com/gofiber/redirect/v2"
 )
 
 type webCmd struct {
@@ -39,14 +43,36 @@ func (cmd *webCmd) Run() {
 		AllowHeaders: "Origin, Content-Type, Accept",
 	}))
 
+	apiV1 := router.Group("/api/v1", limiter.New(limiter.Config{Max: 100}))
+	// Redirect rules for /api/v1
+	router.Use(redirect.New(redirect.Config{
+		Rules: map[string]string{
+			"/docs/": "/swagger/index.html",
+			"/docs":  "/swagger/index.html",
+		},
+		StatusCode: 301,
+	}))
+	// Docs
+	router.Get("/swagger/*", swagger.New(swagger.Config{
+		URL:         "/swagger.json",
+		DeepLinking: true,
+	}))
+	// Auth
+	auth := apiV1.Group("/auth")
+	auth.Post("/login", h.ApiLogin())
+
 	// Set up static file serving
 	var fileServer http.Handler
+	var docsServer http.Handler
 
 	if c.GetCfg().IsProd {
 		staticFS := http.FS(s.Files)
+		docsFS := http.FS(docs.Files)
 		fileServer = http.FileServer(staticFS)
+		docsServer = http.FileServer(docsFS)
 	} else {
 		fileServer = http.FileServer(http.Dir("./static/"))
+		docsServer = http.FileServer(http.Dir("./docs/"))
 	}
 
 	router.Use("/css/", adaptor.HTTPMiddleware(func(next http.Handler) http.Handler {
@@ -60,6 +86,9 @@ func (cmd *webCmd) Run() {
 	}))
 	router.Use("/favicon.ico", adaptor.HTTPMiddleware(func(next http.Handler) http.Handler {
 		return fileServer
+	}))
+	router.Use("/swagger.json", adaptor.HTTPMiddleware(func(next http.Handler) http.Handler {
+		return docsServer
 	}))
 
 	// Set up ui and inertia for handling vue serving

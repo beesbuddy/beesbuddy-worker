@@ -1,0 +1,65 @@
+basePath: /api/v1
+definitions:
+  core.ResponseHTTP:
+    properties:
+      data: {}
+      message:
+        type: string
+      success:
+        type: boolean
+    type: object
+  dto.UserLoginInput:
+    properties:
+      password:
+        type: string
+      username:
+        type: string
+    type: object
+info:
+  contact:
+    email: vnareiko.lt@gmail.com
+    name: Viktor Nareiko
+  description: This is an API for Worker Module
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  title: BeesBuddy worker
+  version: "1.0"
+paths:
+  /auth/login:
+    post:
+      consumes:
+      - application/json
+      description: Create a user
+      parameters:
+      - description: UserOutput
+        in: body
+        name: dto.UserLoginInput
+        required: true
+        schema:
+          $ref: '#/definitions/dto.UserLoginInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/core.ResponseHTTP'
+            - properties:
+                data:
+                  type: string
+              type: object
+        "503":
+          description: Service Unavailable
+          schema:
+            $ref: '#/definitions/core.ResponseHTTP'
+      summary: Authenticate user
+      tags:
+      - login
+securityDefinitions:
+  ApiKeyAuth:
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"

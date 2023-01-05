@@ -8,13 +8,13 @@ import (
 )
 
 type User struct {
-	ID            int       `json:"id" redis:"id"`
-	Username      string    `json:"username" redis:"username"`
-	Email         string    `json:"email" redis:"email"`
-	Password      []byte    `json:"-" redis:"password"`
-	RememberToken string    `json:"-" redis:"remember_token"`
-	IsEnabled     bool      `json:"is_enabled" redis:"is_enabled"`
-	CreatedAt     Timestamp `json:"created_at" redis:"created_at"`
+	ID            int       `json:"id"`
+	Username      string    `json:"username"`
+	Email         string    `json:"email"`
+	Password      string    `json:"-"`
+	RememberToken string    `json:"-"`
+	IsEnabled     bool      `json:"isEnabled"`
+	CreatedAt     Timestamp `json:"createdAt"`
 }
 
 type UserRepository interface {
@@ -35,7 +35,7 @@ func NewUser() *User {
 }
 
 func UserCreateRules(form *forms.Form) {
-	form.Required("username", "email", "password", "is_enabled")
+	form.Required("username", "email", "password", "isEnabled")
 	form.MatchesPattern("username", forms.UsernameRegexp)
 	form.Min("username", 3)
 	form.Max("username", 20)
@@ -44,7 +44,7 @@ func UserCreateRules(form *forms.Form) {
 }
 
 func UserUpdateRules(form *forms.Form) {
-	form.Required("username", "email", "is_enabled")
+	form.Required("username", "email", "isEnabled")
 	form.MatchesPattern("username", forms.UsernameRegexp)
 	form.Min("username", 3)
 	form.Max("username", 20)
@@ -56,7 +56,7 @@ func (u *User) Fill(form *forms.Form) *User {
 	u.Username = form.Data["username"].(string)
 	u.Email = form.Data["email"].(string)
 	u.IsEnabled = form.Data["is_enabled"].(bool)
-	u.Password = []byte(form.Data["password"].(string))
+	u.Password = form.Data["password"].(string)
 
 	return u
 }
