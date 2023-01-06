@@ -9,6 +9,10 @@
 			"SecretKey": "change_it"
 		}
 	],
+	"Admin": {
+		"Username": "admin",
+		"Password": "$2a$14$KpjKPbg2NEzxbwyG/TTZ7uE3E5yiBw/NiLhrHajS8rX989JN.G.7u"
+	},
 	"UiHotReloadUrl": "http://localhost:8080",
 	"IsPrefork": false,
 	"IsProd": false,
