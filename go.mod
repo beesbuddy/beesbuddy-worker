@@ -11,6 +11,14 @@ require (
 )
 
 require (
+	github.com/gofiber/jwt/v3 v3.3.4
+	github.com/gofiber/keyauth/v2 v2.1.30
+	github.com/samber/lo v1.37.0
+)
+
+require golang.org/x/exp v0.0.0-20220303212507-bbda1eaf7a17 // indirect
+
+require (
 	github.com/KyleBanks/depth v1.2.1 // indirect
 	github.com/PuerkitoBio/purell v1.1.1 // indirect
 	github.com/PuerkitoBio/urlesc v0.0.0-20170810143723-de5bf2ad4578 // indirect
@@ -37,7 +45,6 @@ require (
 	github.com/go-playground/universal-translator v0.18.0 // indirect
 	github.com/go-playground/validator/v10 v10.11.1 // indirect
 	github.com/gofiber/adaptor/v2 v2.1.30
-	github.com/gofiber/jwt/v3 v3.3.4
 	github.com/gorilla/websocket v1.5.0 // indirect
 	github.com/klauspost/compress v1.15.14 // indirect
 	github.com/leodido/go-urn v1.2.1 // indirect
@@ -52,6 +59,6 @@ require (
 	golang.org/x/crypto v0.4.0
 	golang.org/x/net v0.4.0 // indirect
 	golang.org/x/sync v0.1.0 // indirect
-	golang.org/x/sys v0.3.0 // indirect
+	golang.org/x/sys v0.4.0 // indirect
 	golang.org/x/text v0.5.0 // indirect
 )

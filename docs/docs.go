@@ -23,9 +23,9 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/auth/login": {
+        "/auth/token": {
             "post": {
-                "description": "Create a user",
+                "description": "Create a token",
                 "consumes": [
                     "application/json"
                 ],
@@ -33,17 +33,17 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "login"
+                    "auth"
                 ],
-                "summary": "Authenticate user",
+                "summary": "Authenticate client",
                 "parameters": [
                     {
-                        "description": "UserOutput",
-                        "name": "dto.UserLoginInput",
+                        "description": "ClientInput",
+                        "name": "dto.ClientInput",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/dto.UserLoginInput"
+                            "$ref": "#/definitions/dto.ClientInput"
                         }
                     }
                 ],
@@ -74,6 +74,52 @@ const docTemplate = `{
                     }
                 }
             }
+        },
+        "/settings/workers": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Get workers",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "settings"
+                ],
+                "summary": "Get active workers",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/core.ResponseHTTP"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "string"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "503": {
+                        "description": "Service Unavailable",
+                        "schema": {
+                            "$ref": "#/definitions/core.ResponseHTTP"
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
@@ -89,13 +135,13 @@ const docTemplate = `{
                 }
             }
         },
-        "dto.UserLoginInput": {
+        "dto.ClientInput": {
             "type": "object",
             "properties": {
-                "password": {
+                "appKey": {
                     "type": "string"
                 },
-                "username": {
+                "secretKey": {
                     "type": "string"
                 }
             }

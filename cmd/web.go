@@ -8,29 +8,30 @@ import (
 
 	swagger "github.com/arsmn/fiber-swagger/v2"
 	"github.com/beesbuddy/beesbuddy-worker/docs"
-	c "github.com/beesbuddy/beesbuddy-worker/internal/core"
-	h "github.com/beesbuddy/beesbuddy-worker/internal/handlers"
-	s "github.com/beesbuddy/beesbuddy-worker/static"
+	"github.com/beesbuddy/beesbuddy-worker/internal/core"
+	"github.com/beesbuddy/beesbuddy-worker/internal/handlers"
+	"github.com/beesbuddy/beesbuddy-worker/static"
 	"github.com/gofiber/adaptor/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/fiber/v2/middleware/limiter"
 	"github.com/gofiber/fiber/v2/middleware/logger"
 	"github.com/gofiber/fiber/v2/middleware/monitor"
 	"github.com/gofiber/fiber/v2/middleware/recover"
+	jwtware "github.com/gofiber/jwt/v3"
 	"github.com/gofiber/redirect/v2"
 )
 
 type webCmd struct {
-	app *c.App
+	app *core.App
 }
 
-func NewWebRunner(app *c.App) c.CmdRunner {
-	module := &webCmd{app: app}
-	return module
+func NewWebRunner(app *core.App) core.CmdRunner {
+	cmd := &webCmd{app: app}
+	return cmd
 }
 
 func (cmd *webCmd) Run() {
-	cfg := c.GetCfg()
+	cfg := core.GetCfg()
 
 	router := cmd.app.Router
 
@@ -59,14 +60,21 @@ func (cmd *webCmd) Run() {
 	}))
 	// Auth
 	auth := apiV1.Group("/auth")
-	auth.Post("/login", h.ApiLogin())
+	auth.Post("/token", handlers.ApiGenerateToken)
+	// Settings
+	settings := apiV1.Group("/settings")
+	settings.Use(jwtware.New(jwtware.Config{
+		SigningKey:   []byte(core.GetCfg().Secret),
+		ErrorHandler: core.AuthError,
+	}))
+	settings.Get("/workers", handlers.ApiGetWorkers)
 
 	// Set up static file serving
 	var fileServer http.Handler
 	var docsServer http.Handler
 
-	if c.GetCfg().IsProd {
-		staticFS := http.FS(s.Files)
+	if core.GetCfg().IsProd {
+		staticFS := http.FS(static.Files)
 		docsFS := http.FS(docs.Files)
 		fileServer = http.FileServer(staticFS)
 		docsServer = http.FileServer(docsFS)
@@ -96,7 +104,7 @@ func (cmd *webCmd) Run() {
 	ui.Use(adaptor.HTTPMiddleware(func(next http.Handler) http.Handler {
 		return cmd.app.InertiaManager.Middleware(next)
 	}))
-	ui.Get("/", h.HomeHandler(cmd.app))
+	ui.Get("/", handlers.HomeHandler(cmd.app))
 
 	go func() {
 		if err := cmd.app.Router.Listen(fmt.Sprintf("%s:%d", cfg.AppHost, cfg.AppPort)); err != nil {

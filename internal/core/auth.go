@@ -1,9 +1,7 @@
 package core
 
 import (
-	"strconv"
-
-	"github.com/golang-jwt/jwt/v4"
+	"github.com/gofiber/fiber/v2"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -12,27 +10,25 @@ func HashPassword(password string) (string, error) {
 	return string(bytes), err
 }
 
-func ValidToken(t *jwt.Token, id string) bool {
-	n, err := strconv.Atoi(id)
-	if err != nil {
-		return false
-	}
-
-	claims := t.Claims.(jwt.MapClaims)
-	uid := int(claims["user_id"].(float64))
-
-	if uid != n {
-		return false
-	}
-
-	return true
-}
-
-func ValidUsers(id string, p string) bool {
-	return true
-}
-
 func CheckPasswordHash(password, hash string) bool {
 	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
 	return err == nil
+}
+
+func AuthError(ctx *fiber.Ctx, err error) error {
+	if err.Error() == "Missing or malformed JWT" {
+		return ctx.Status(fiber.StatusBadRequest).
+			JSON(&ResponseHTTP{
+				Success: false,
+				Data:    nil,
+				Message: "Missing or malformed token",
+			})
+	}
+
+	return ctx.Status(fiber.StatusUnauthorized).
+		JSON(&ResponseHTTP{
+			Success: false,
+			Data:    nil,
+			Message: "Invalid or expired token",
+		})
 }

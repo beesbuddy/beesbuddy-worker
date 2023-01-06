@@ -8,11 +8,11 @@ definitions:
       success:
         type: boolean
     type: object
-  dto.UserLoginInput:
+  dto.ClientInput:
     properties:
-      password:
+      appKey:
         type: string
-      username:
+      secretKey:
         type: string
     type: object
 info:
@@ -26,18 +26,18 @@ info:
   title: BeesBuddy worker
   version: "1.0"
 paths:
-  /auth/login:
+  /auth/token:
     post:
       consumes:
       - application/json
-      description: Create a user
+      description: Create a token
       parameters:
-      - description: UserOutput
+      - description: ClientInput
         in: body
-        name: dto.UserLoginInput
+        name: dto.ClientInput
         required: true
         schema:
-          $ref: '#/definitions/dto.UserLoginInput'
+          $ref: '#/definitions/dto.ClientInput'
       produces:
       - application/json
       responses:
@@ -54,9 +54,35 @@ paths:
           description: Service Unavailable
           schema:
             $ref: '#/definitions/core.ResponseHTTP'
-      summary: Authenticate user
+      summary: Authenticate client
       tags:
-      - login
+      - auth
+  /settings/workers:
+    get:
+      description: Get workers
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/core.ResponseHTTP'
+            - properties:
+                data:
+                  items:
+                    type: string
+                  type: array
+              type: object
+        "503":
+          description: Service Unavailable
+          schema:
+            $ref: '#/definitions/core.ResponseHTTP'
+      security:
+      - ApiKeyAuth: []
+      summary: Get active workers
+      tags:
+      - settings
 securityDefinitions:
   ApiKeyAuth:
     in: header
