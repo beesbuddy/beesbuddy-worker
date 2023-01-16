@@ -18,7 +18,7 @@ type App struct {
 	SessionManager *scs.SessionManager
 	RememberCookie *securecookie.Obj
 	MqttClient     MQTT.Client
-	Queue          chan int64
+	Pool           chan int64
 }
 
 func NewApplication() *App {

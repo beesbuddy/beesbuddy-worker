@@ -67,7 +67,8 @@ func (cmd *webCmd) Run() {
 		SigningKey:   []byte(core.GetCfg().Secret),
 		ErrorHandler: core.AuthError,
 	}))
-	settings.Get("/workers", handlers.ApiGetWorkers)
+	settings.Get("/subscribers", handlers.ApiGetSubscribers(cmd.app))
+	settings.Post("/subscribers", handlers.ApiCreateSubscriber(cmd.app))
 
 	// Set up static file serving
 	var fileServer http.Handler

@@ -30,7 +30,14 @@
                           href="/command/create">
                 <plus-icon class="h-5 w-5 mr-2" />
                 <span>
-                    Create Worker
+                    Create Subscriber
+                </span>
+            </sidebar-link>
+            <sidebar-link :is-active="!!$page.props.isCreateCommandActive"
+                          href="/command/send">
+                <paper-airplane-icon class="h-5 w-5 mr-2" />
+                <span>
+                    Send Message
                 </span>
             </sidebar-link>
             <sidebar-title>
@@ -118,6 +125,7 @@ import {
     CommandLineIcon,
     HomeIcon,
     PlusIcon,
+    PaperAirplaneIcon,
     UserIcon,
     UserPlusIcon
 } from '@heroicons/vue/24/outline';
@@ -138,6 +146,7 @@ export default {
         CommandLineIcon,
         HomeIcon,
         PlusIcon,
+        PaperAirplaneIcon,
         UserIcon,
         UserPlusIcon,
         FlashMessages,

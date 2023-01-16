@@ -1,10 +1,11 @@
 package cmd
 
 import (
+	"fmt"
 	"log"
 
 	c "github.com/beesbuddy/beesbuddy-worker/internal/core"
-	m "github.com/beesbuddy/beesbuddy-worker/internal/messaging"
+	q "github.com/beesbuddy/beesbuddy-worker/internal/queue"
 )
 
 type WorkersCmd struct {
@@ -17,16 +18,36 @@ func NewWorkersRunner(app *c.App) c.CmdRunner {
 }
 
 func (cmd *WorkersCmd) Run() {
-	m.NewConnection(cmd.app.MqttClient)
+	q.NewConnection(cmd.app.MqttClient)
 
 	for {
 		log.Println("[Re]configuring MQTT:", c.GetCfg().BrokerTCPUrl)
-
+		cmd.initSubscribers()
 		<-c.GetCfgObject().GetSubscriber(c.WorkerKey)
+		cmd.cleanUpSubscribers()
 	}
 }
 
 func (cmd *WorkersCmd) CleanUp() {
 	log.Println("Gracefully closing mqtt workers...")
-	m.Disconnect(cmd.app.MqttClient)
+	cmd.cleanUpSubscribers()
+	q.Disconnect(cmd.app.MqttClient)
+}
+
+func (cmd *WorkersCmd) cleanUpSubscribers() {
+	for _, s := range c.GetCfg().Subscribers {
+		topic := fmt.Sprintf("apiary/%s/hive/%s", s.ApiaryId, s.HiveId)
+		go func(topic string) {
+			q.Unsubscribe(cmd.app.MqttClient, topic)
+		}(topic)
+	}
+}
+
+func (cmd *WorkersCmd) initSubscribers() {
+	for _, s := range c.GetCfg().Subscribers {
+		topic := fmt.Sprintf("apiary/%s/hive/%s", s.ApiaryId, s.HiveId)
+		go func(topic string) {
+			q.Subscribe(cmd.app.MqttClient, topic)
+		}(topic)
+	}
 }

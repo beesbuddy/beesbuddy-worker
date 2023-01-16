@@ -15,6 +15,7 @@ type User struct {
 	RememberToken string    `json:"-"`
 	IsEnabled     bool      `json:"isEnabled"`
 	CreatedAt     Timestamp `json:"createdAt"`
+	UpdatedAt     Timestamp `json:"updatedAt"`
 }
 
 type UserRepository interface {

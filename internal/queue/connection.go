@@ -1,6 +1,8 @@
-package messaging
+package queue
 
-import MQTT "github.com/eclipse/paho.mqtt.golang"
+import (
+	MQTT "github.com/eclipse/paho.mqtt.golang"
+)
 
 func NewConnection(mqttClient MQTT.Client) {
 	if token := mqttClient.Connect(); token.Wait() && token.Error() != nil {

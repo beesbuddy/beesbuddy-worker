@@ -67,21 +67,21 @@
                 }
             }
         },
-        "/settings/workers": {
+        "/settings/subscribers": {
             "get": {
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
                 ],
-                "description": "Get workers",
+                "description": "Get subscribers",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
                     "settings"
                 ],
-                "summary": "Get active workers",
+                "summary": "Get active subscribers",
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -96,7 +96,62 @@
                                         "data": {
                                             "type": "array",
                                             "items": {
-                                                "type": "string"
+                                                "$ref": "#/definitions/models.Subscriber"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "503": {
+                        "description": "Service Unavailable",
+                        "schema": {
+                            "$ref": "#/definitions/core.ResponseHTTP"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Create a subscriber",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "settings"
+                ],
+                "summary": "Create a new subscriber",
+                "parameters": [
+                    {
+                        "description": "Subscriber",
+                        "name": "dto.SubscriberInput",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.SubscriberInput"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/core.ResponseHTTP"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/models.Subscriber"
                                             }
                                         }
                                     }
@@ -132,8 +187,33 @@
             "properties": {
                 "appKey": {
                     "type": "string"
+                }
+            }
+        },
+        "dto.SubscriberInput": {
+            "type": "object",
+            "properties": {
+                "apiaryId": {
+                    "type": "string"
                 },
-                "secretKey": {
+                "hiveId": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.Subscriber": {
+            "type": "object",
+            "properties": {
+                "apiaryId": {
+                    "type": "string"
+                },
+                "createdAt": {
+                    "type": "string"
+                },
+                "hiveId": {
+                    "type": "string"
+                },
+                "updatedAt": {
                     "type": "string"
                 }
             }

@@ -11,9 +11,9 @@ import (
 	"github.com/samber/lo"
 )
 
-func getClient(appKey, secretKey string) (models.Client, bool) {
+func getClient(appKey string) (models.Client, bool) {
 	return lo.Find(core.GetCfg().Clients, func(c models.Client) bool {
-		return c.AppKey == appKey && c.SecretKey == secretKey
+		return c.AppKey == appKey
 	})
 }
 
@@ -35,18 +35,16 @@ func ApiGenerateToken(ctx *fiber.Ctx) error {
 	}
 
 	appKey := input.AppKey
-	secretKey := input.SecretKey
 
-	client, ok := getClient(appKey, secretKey)
+	client, ok := getClient(appKey)
 
 	if !ok {
 		return ctx.Status(fiber.StatusUnauthorized).JSON(fiber.Map{"status": "error", "message": "Client not found", "data": nil})
 	}
 
 	claims := jwt.MapClaims{
-		"app_key":    client.AppKey,
-		"secret_key": client.SecretKey,
-		"exp":        time.Now().Add(time.Minute * 30).Unix(),
+		"app_key": client.AppKey,
+		"exp":     time.Now().Add(time.Minute * 30).Unix(),
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)

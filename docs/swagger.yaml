@@ -12,7 +12,23 @@ definitions:
     properties:
       appKey:
         type: string
-      secretKey:
+    type: object
+  dto.SubscriberInput:
+    properties:
+      apiaryId:
+        type: string
+      hiveId:
+        type: string
+    type: object
+  models.Subscriber:
+    properties:
+      apiaryId:
+        type: string
+      createdAt:
+        type: string
+      hiveId:
+        type: string
+      updatedAt:
         type: string
     type: object
 info:
@@ -57,9 +73,9 @@ paths:
       summary: Authenticate client
       tags:
       - auth
-  /settings/workers:
+  /settings/subscribers:
     get:
-      description: Get workers
+      description: Get subscribers
       produces:
       - application/json
       responses:
@@ -71,7 +87,7 @@ paths:
             - properties:
                 data:
                   items:
-                    type: string
+                    $ref: '#/definitions/models.Subscriber'
                   type: array
               type: object
         "503":
@@ -80,7 +96,39 @@ paths:
             $ref: '#/definitions/core.ResponseHTTP'
       security:
       - ApiKeyAuth: []
-      summary: Get active workers
+      summary: Get active subscribers
+      tags:
+      - settings
+    post:
+      description: Create a subscriber
+      parameters:
+      - description: Subscriber
+        in: body
+        name: dto.SubscriberInput
+        required: true
+        schema:
+          $ref: '#/definitions/dto.SubscriberInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/core.ResponseHTTP'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/models.Subscriber'
+                  type: array
+              type: object
+        "503":
+          description: Service Unavailable
+          schema:
+            $ref: '#/definitions/core.ResponseHTTP'
+      security:
+      - ApiKeyAuth: []
+      summary: Create a new subscriber
       tags:
       - settings
 securityDefinitions:
