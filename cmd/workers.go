@@ -6,10 +6,12 @@ import (
 
 	c "github.com/beesbuddy/beesbuddy-worker/internal/core"
 	q "github.com/beesbuddy/beesbuddy-worker/internal/queue"
+	"github.com/samber/lo"
 )
 
 type WorkersCmd struct {
-	app *c.App
+	app    *c.App
+	topics []string
 }
 
 func NewWorkersRunner(app *c.App) c.CmdRunner {
@@ -22,7 +24,12 @@ func (cmd *WorkersCmd) Run() {
 
 	for {
 		log.Println("[Re]configuring MQTT:", c.GetCfg().BrokerTCPUrl)
-		cmd.initSubscribers()
+
+		if !cmd.app.MqttClient.IsConnectionOpen() || !cmd.app.MqttClient.IsConnected() {
+			q.NewConnection(cmd.app.MqttClient)
+		}
+
+		cmd.initializeSubscribers()
 		<-c.GetCfgObject().GetSubscriber(c.WorkerKey)
 		cmd.cleanUpSubscribers()
 	}
@@ -30,24 +37,40 @@ func (cmd *WorkersCmd) Run() {
 
 func (cmd *WorkersCmd) CleanUp() {
 	log.Println("Gracefully closing mqtt workers...")
-	cmd.cleanUpSubscribers()
-	q.Disconnect(cmd.app.MqttClient)
+	if cmd.app.MqttClient.IsConnectionOpen() && cmd.app.MqttClient.IsConnected() {
+		cmd.cleanUpSubscribers()
+		q.Disconnect(cmd.app.MqttClient)
+	}
 }
 
 func (cmd *WorkersCmd) cleanUpSubscribers() {
 	for _, s := range c.GetCfg().Subscribers {
 		topic := fmt.Sprintf("apiary/%s/hive/%s", s.ApiaryId, s.HiveId)
-		go func(topic string) {
-			q.Unsubscribe(cmd.app.MqttClient, topic)
-		}(topic)
+		topicToDelete, alreadyExists := lo.Find(cmd.topics, func(t string) bool {
+			return t == topic
+		})
+
+		if alreadyExists {
+			go func(topic string) {
+				q.Unsubscribe(cmd.app.MqttClient, topicToDelete)
+			}(topic)
+		}
+
 	}
 }
 
-func (cmd *WorkersCmd) initSubscribers() {
+func (cmd *WorkersCmd) initializeSubscribers() {
 	for _, s := range c.GetCfg().Subscribers {
 		topic := fmt.Sprintf("apiary/%s/hive/%s", s.ApiaryId, s.HiveId)
-		go func(topic string) {
-			q.Subscribe(cmd.app.MqttClient, topic)
-		}(topic)
+		_, alreadyExists := lo.Find(cmd.topics, func(t string) bool {
+			return t == topic
+		})
+
+		if !alreadyExists {
+			go func(topic string) {
+				q.Subscribe(cmd.app.MqttClient, topic)
+			}(topic)
+		}
 	}
+
 }
