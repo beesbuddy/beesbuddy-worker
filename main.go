@@ -1,12 +1,8 @@
 package main
 
 import (
-	"os"
-	"os/signal"
-	"syscall"
-
 	"github.com/beesbuddy/beesbuddy-worker/cmd"
-	"github.com/beesbuddy/beesbuddy-worker/internal/core"
+	"github.com/petaki/support-go/cli"
 )
 
 // @title BeesBuddy worker
@@ -25,19 +21,21 @@ import (
 // @in header
 // @name Authorization
 func main() {
-	app := core.NewApplication()
-
-	webRunner := cmd.NewWebRunner(app)
-	webRunner.Run()
-
-	workersRunner := cmd.NewWorkersRunner(app)
-	workersRunner.Run()
-
-	interrupt := make(chan os.Signal, 1)
-	signal.Notify(interrupt, os.Interrupt, syscall.SIGTERM)
-
-	<-interrupt
-
-	workersRunner.CleanUp()
-	webRunner.CleanUp()
+	(&cli.App{
+		Name:    "BeesBuddy",
+		Version: "main",
+		Groups: []*cli.Group{
+			{
+				Name:  "web",
+				Usage: "Web commands",
+				Commands: []*cli.Command{
+					{
+						Name:       "serve",
+						Usage:      "Serve the app",
+						HandleFunc: cmd.WebServe,
+					},
+				},
+			},
+		},
+	}).Execute()
 }

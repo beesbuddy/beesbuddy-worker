@@ -1,6 +1,6 @@
 package core
 
-type CmdRunner interface {
+type Mod interface {
 	Run()
 	CleanUp()
 }

@@ -18,10 +18,9 @@ type App struct {
 	SessionManager *scs.SessionManager
 	RememberCookie *securecookie.Obj
 	MqttClient     MQTT.Client
-	Pool           chan int64
 }
 
-func NewApplication() *App {
+func NewApp() *App {
 	router := fiber.New(fiber.Config{Prefork: GetCfg().IsPrefork})
 
 	debug := !GetCfg().IsProd
@@ -40,7 +39,7 @@ func NewApplication() *App {
 		log.Fatal(err)
 	}
 
-	opts := MQTT.NewClientOptions().AddBroker(GetCfg().BrokerTCPUrl)
+	opts := MQTT.NewClientOptions().AddBroker(GetCfg().BrokerTCPUrl).SetAutoReconnect(true)
 	client := MQTT.NewClient(opts)
 
 	if err != nil {

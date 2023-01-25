@@ -2,7 +2,7 @@
 
 Application responsible for dispatching messages from MQTT to time series database and WS
 
-## Hot to generate swagger documentation
+## How to generate swagger documentation
 
 First of all you need to install swaggo with:
 
@@ -14,4 +14,10 @@ Then you need to run:
 
 ```sh
 swag init
+```
+
+## How to run app with air
+
+```sh
+air -c dev.air.default.toml web serve
 ```
