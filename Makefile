@@ -1,14 +1,15 @@
 BINARY=beesbuddy-worker
-PUBLIC_DIR=public
+STATIC_DIR=static
 
 clean:
 	if [ -f ${BINARY} ] ; then rm ${BINARY} ; fi
-	if [ -d ${PUBLIC_DIR} ] ; then rm -rf ${PUBLIC_DIR} ; fi
+	cd ${STATIC_DIR} && find . -type f ! -name 'embed.go' -delete && rm -rf css js
 
 static: clean
-	cd ui;\
-	npm install;\
-	npm run build
+	npm install; npm run prod
+
+hot: npm install
+	npm run hot
 
 build: static
 	go build -o ${BINARY} .;
