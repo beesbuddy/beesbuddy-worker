@@ -1,5 +1,5 @@
 <template>
-    <app-title :title="subtitle"/>
+    <app-title :title="subtitle" />
     <div class="p-5">
         <breadcrumb :links="links" />
         <card-title>

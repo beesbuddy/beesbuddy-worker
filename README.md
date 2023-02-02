@@ -21,3 +21,5 @@ swag init
 ```sh
 air -c dev.air.default.toml web serve
 ```
+
+If in configuration `isProd` is specified as false, hot reload is initialized and hot reload is initialize via `npm run hot` command.

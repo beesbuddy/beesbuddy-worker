@@ -1,8 +1,11 @@
 package cmd
 
 import (
+	"log"
 	"os"
+	"os/exec"
 	"os/signal"
+	"runtime"
 	"syscall"
 
 	"github.com/beesbuddy/beesbuddy-worker/internal/core"
@@ -11,15 +14,31 @@ import (
 )
 
 func WebServe(group *cli.Group, command *cli.Command, arguments []string) int {
-	command.FlagSet().Bool("debug", false, "Application debug mode")
-	command.FlagSet().Bool("config", false, "Application configuration path")
-
 	_, err := command.Parse(arguments)
 	if err != nil {
 		return command.PrintHelp(group)
 	}
 
 	app := core.NewApp()
+	var cmd *exec.Cmd
+
+	if !core.GetCfg().IsProd {
+		name := "/bin/sh"
+		arg := "-c"
+		command := "npm run hot"
+
+		if runtime.GOOS == "windows" {
+			name = "cmd.exe"
+			arg = "/C"
+		}
+
+		cmd = exec.Command(name, arg, command)
+		cmd.Stdout = os.Stdout
+		cmd.Start()
+		if err != nil {
+			log.Fatal(err)
+		}
+	}
 
 	tstorage := mod.NewTstorageRunner(app)
 	tstorage.Run()
@@ -32,6 +51,10 @@ func WebServe(group *cli.Group, command *cli.Command, arguments []string) int {
 	signal.Notify(interrupt, os.Interrupt, syscall.SIGTERM)
 
 	<-interrupt
+
+	if err := cmd.Process.Kill(); err != nil {
+		log.Fatal("failed to kill process: ", err)
+	}
 
 	workersRunner.CleanUp()
 	tstorage.CleanUp()

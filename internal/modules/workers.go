@@ -22,17 +22,20 @@ func NewWorkersRunner(app *core.App) core.Mod {
 func (mod *WorkersMod) Run() {
 	mqtt.NewConnection(mod.app.MqttClient)
 
-	for {
-		log.Println("[Re]configuring MQTT:", core.GetCfg().BrokerTCPUrl)
+	go func() {
+		for {
+			log.Println("[Re]configuring MQTT:", core.GetCfg().BrokerTCPUrl)
 
-		if !mod.app.MqttClient.IsConnectionOpen() || !mod.app.MqttClient.IsConnected() {
-			mqtt.NewConnection(mod.app.MqttClient)
+			if !mod.app.MqttClient.IsConnectionOpen() || !mod.app.MqttClient.IsConnected() {
+				mqtt.NewConnection(mod.app.MqttClient)
+			}
+
+			mod.initializeSubscribers()
+			<-core.GetCfgObject().GetSubscriber(core.WorkerKey)
+			mod.cleanUpSubscribers()
 		}
+	}()
 
-		mod.initializeSubscribers()
-		<-core.GetCfgObject().GetSubscriber(core.WorkerKey)
-		mod.cleanUpSubscribers()
-	}
 }
 
 func (mod *WorkersMod) CleanUp() {
