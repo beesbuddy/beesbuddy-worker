@@ -22,4 +22,6 @@ swag init
 air -c dev.air.default.toml web serve
 ```
 
-If in configuration `isProd` is specified as false, hot reload is initialized and hot reload is initialize via `npm run hot` command.
+If in configuration `HotReload` is set to true, app will try to run ui with hot reload via `npm run hot` command. I found it usefull at specific cases for me.
+
+You can alway run ui with hot reload by using make or just executing `npm run hot`.
