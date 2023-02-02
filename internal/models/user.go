@@ -3,19 +3,20 @@ package models
 import (
 	"crypto/md5"
 	"fmt"
+	"time"
 
 	"github.com/petaki/support-go/forms"
 )
 
 type User struct {
-	ID            int       `json:"id"`
-	Username      string    `json:"username"`
-	Email         string    `json:"email"`
-	Password      string    `json:"-"`
-	RememberToken string    `json:"-"`
-	IsEnabled     bool      `json:"isEnabled"`
-	CreatedAt     Timestamp `json:"createdAt"`
-	UpdatedAt     Timestamp `json:"updatedAt"`
+	ID            int       `gorm:"primaryKey;autoIncrement:true;column:user_id"`
+	Username      string    `gorm:"unique;column:username;type:varchar(32);not null"`
+	Email         string    `gorm:"unique;" validate:"required,email,min=6,max=32"`
+	Password      string    `gorm:"column:password;type:varchar(128);not null" validate:"required,min=6"`
+	RememberToken string    `gorm:"column:remember_token;type:varchar(128);default:null"`
+	IsEnabled     bool      `gorm:"column:is_enabled;type:boolean;default:null"`
+	CreatedAt     time.Time `gorm:"column:created_at;type:timestamp;default:null"`
+	UpdatedAt     time.Time `gorm:"column:updated_at;type:timestamp;default:null"`
 }
 
 type UserRepository interface {

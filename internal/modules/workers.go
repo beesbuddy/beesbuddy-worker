@@ -39,7 +39,6 @@ func (m *workersModule) Run() {
 			m.cleanUpSubscribers()
 		}
 	}(m)
-
 }
 
 func (m *workersModule) CleanUp() {

@@ -43,11 +43,11 @@ func main() {
 				},
 			},
 			{
-				Name:  "migrate",
+				Name:  "migration",
 				Usage: "Migration commands",
 				Commands: []*cli.Command{
 					{
-						Name:       "migrate",
+						Name:       "run",
 						Usage:      "Run database migration",
 						HandleFunc: cmd.Migrate(ctx),
 					},

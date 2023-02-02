@@ -11,6 +11,7 @@ import (
 	c "github.com/leonidasdeim/goconfig"
 	"github.com/petaki/inertia-go"
 	"github.com/petaki/support-go/mix"
+	"gorm.io/gorm"
 )
 
 type Ctx struct {
@@ -23,6 +24,7 @@ type Ctx struct {
 	Services       map[string]interface{}
 	Repositories   map[string]interface{}
 	Config         *c.Config[models.Config]
+	Orm            *gorm.DB
 }
 
 func NewContext(config *c.Config[models.Config]) *Ctx {
@@ -52,12 +54,15 @@ func NewContext(config *c.Config[models.Config]) *Ctx {
 		log.Fatal(err)
 	}
 
+	gorm := NewDatabase(config.GetCfg())
+
 	ctx := &Ctx{
 		Router:         router,
 		MixManager:     mixManager,
 		InertiaManager: inertiaManager,
 		MqttClient:     mqttClient,
 		Config:         config,
+		Orm:            gorm,
 	}
 
 	return ctx

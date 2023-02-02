@@ -15,6 +15,7 @@ type Config struct {
 	BrokerTCPUrl   string        `requred:"true"`
 	Admin          dto.UserInput `required:"true"`
 	Subscribers    []Subscriber  `required:"false"`
+	DbName         string        `default:"beesbuddy"`
 }
 
 type Client struct {
