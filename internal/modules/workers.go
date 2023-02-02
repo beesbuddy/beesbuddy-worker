@@ -9,69 +9,69 @@ import (
 	"github.com/samber/lo"
 )
 
-type WorkersMod struct {
+type WorkersModule struct {
 	app    *core.App
 	topics []string
 }
 
-func NewWorkersRunner(app *core.App) core.Mod {
-	mod := &WorkersMod{app: app}
-	return mod
+func NewWorkersRunner(app *core.App) core.Module {
+	m := &WorkersModule{app: app}
+	return m
 }
 
-func (mod *WorkersMod) Run() {
-	mqtt.NewConnection(mod.app.MqttClient)
+func (m *WorkersModule) Run() {
+	mqtt.NewConnection(m.app.MqttClient)
 
 	go func() {
 		for {
 			log.Println("[Re]configuring MQTT:", core.GetCfg().BrokerTCPUrl)
 
-			if !mod.app.MqttClient.IsConnectionOpen() || !mod.app.MqttClient.IsConnected() {
-				mqtt.NewConnection(mod.app.MqttClient)
+			if !m.app.MqttClient.IsConnectionOpen() || !m.app.MqttClient.IsConnected() {
+				mqtt.NewConnection(m.app.MqttClient)
 			}
 
-			mod.initializeSubscribers()
+			m.initializeSubscribers()
 			<-core.GetCfgObject().GetSubscriber(core.WorkerKey)
-			mod.cleanUpSubscribers()
+			m.cleanUpSubscribers()
 		}
 	}()
 
 }
 
-func (mod *WorkersMod) CleanUp() {
+func (m *WorkersModule) CleanUp() {
 	log.Println("Gracefully closing mqtt workers...")
-	if mod.app.MqttClient.IsConnectionOpen() && mod.app.MqttClient.IsConnected() {
-		mod.cleanUpSubscribers()
-		mqtt.Disconnect(mod.app.MqttClient)
+	if m.app.MqttClient.IsConnectionOpen() && m.app.MqttClient.IsConnected() {
+		m.cleanUpSubscribers()
+		mqtt.Disconnect(m.app.MqttClient)
 	}
 }
 
-func (mod *WorkersMod) cleanUpSubscribers() {
+func (m *WorkersModule) cleanUpSubscribers() {
 	for _, s := range core.GetCfg().Subscribers {
 		topic := fmt.Sprintf("apiary/%s/hive/%s", s.ApiaryId, s.HiveId)
-		topicToDelete, alreadyExists := lo.Find(mod.topics, func(t string) bool {
+		topicToDelete, alreadyExists := lo.Find(m.topics, func(t string) bool {
 			return t == topic
 		})
 
 		if alreadyExists {
 			go func(topic string) {
-				mqtt.Unsubscribe(mod.app.MqttClient, topicToDelete)
+				mqtt.Unsubscribe(m.app.MqttClient, topicToDelete)
 			}(topic)
 		}
 
 	}
 }
 
-func (mod *WorkersMod) initializeSubscribers() {
+func (m *WorkersModule) initializeSubscribers() {
 	for _, s := range core.GetCfg().Subscribers {
 		topic := fmt.Sprintf("apiary/%s/hive/%s", s.ApiaryId, s.HiveId)
-		_, alreadyExists := lo.Find(mod.topics, func(t string) bool {
+		_, alreadyExists := lo.Find(m.topics, func(t string) bool {
 			return t == topic
 		})
 
 		if !alreadyExists {
 			go func(topic string) {
-				mqtt.Subscribe(mod.app.MqttClient, topic)
+				mqtt.Subscribe(m.app.MqttClient, topic)
 			}(topic)
 		}
 	}

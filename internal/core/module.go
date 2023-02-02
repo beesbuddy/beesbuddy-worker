@@ -1,6 +1,6 @@
 package core
 
-type Mod interface {
+type Module interface {
 	Run()
 	CleanUp()
 }

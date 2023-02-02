@@ -2,19 +2,19 @@ package modules
 
 import "github.com/beesbuddy/beesbuddy-worker/internal/core"
 
-type tstorageMod struct {
+type tstorageModule struct {
 	app *core.App
 }
 
-func NewTstorageRunner(app *core.App) core.Mod {
-	mod := &tstorageMod{app: app}
-	return mod
+func NewTstorageRunner(app *core.App) core.Module {
+	m := &tstorageModule{app: app}
+	return m
 }
 
-func (mod *tstorageMod) Run() {
+func (m *tstorageModule) Run() {
 
 }
 
-func (mod *tstorageMod) CleanUp() {
+func (m *tstorageModule) CleanUp() {
 
 }

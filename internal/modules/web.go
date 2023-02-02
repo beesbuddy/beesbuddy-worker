@@ -21,19 +21,19 @@ import (
 	"github.com/gofiber/redirect/v2"
 )
 
-type webMod struct {
+type webModule struct {
 	app *core.App
 }
 
-func NewWebRunner(app *core.App) core.Mod {
-	mod := &webMod{app: app}
-	return mod
+func NewWebRunner(app *core.App) core.Module {
+	m := &webModule{app: app}
+	return m
 }
 
-func (mod *webMod) Run() {
+func (m *webModule) Run() {
 	cfg := core.GetCfg()
 
-	router := mod.app.Router
+	router := m.app.Router
 
 	// Set up base handlers / middleware
 	router.Use(recover.New())
@@ -67,8 +67,8 @@ func (mod *webMod) Run() {
 		SigningKey:   []byte(core.GetCfg().Secret),
 		ErrorHandler: core.AuthError,
 	}))
-	settings.Get("/subscribers", handlers.ApiGetSubscribers(mod.app))
-	settings.Post("/subscribers", handlers.ApiCreateSubscriber(mod.app))
+	settings.Get("/subscribers", handlers.ApiGetSubscribers(m.app))
+	settings.Post("/subscribers", handlers.ApiCreateSubscriber(m.app))
 
 	// Set up static file serving
 	var fileServer http.Handler
@@ -103,21 +103,22 @@ func (mod *webMod) Run() {
 	// Set up ui and inertia for handling vue serving
 	ui := router.Group("/")
 	ui.Use(adaptor.HTTPMiddleware(func(next http.Handler) http.Handler {
-		return mod.app.InertiaManager.Middleware(next)
+		return m.app.InertiaManager.Middleware(next)
 	}))
-	ui.Get("/", handlers.HomeHandler(mod.app))
+	ui.Get("/", handlers.HomeHandler(m.app))
 
 	go func() {
-		if err := mod.app.Router.Listen(fmt.Sprintf("%s:%d", cfg.AppHost, cfg.AppPort)); err != nil {
+		if err := m.app.Router.Listen(fmt.Sprintf("%s:%d", cfg.AppHost, cfg.AppPort)); err != nil {
 			log.Panic(err)
 		}
 	}()
 }
 
-func (mod *webMod) CleanUp() {
+func (m *webModule) CleanUp() {
 	log.Println("Gracefully closing web...")
+
 	go func() {
-		err := mod.app.Router.Shutdown()
+		err := m.app.Router.Shutdown()
 
 		if err != nil {
 			log.Panic(err)
