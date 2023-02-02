@@ -9,20 +9,23 @@ import (
 	"github.com/samber/lo"
 )
 
-type WorkersModule struct {
+type workersModule struct {
 	ctx    *core.Ctx
 	topics []string
 }
 
 func NewWorkersRunner(ctx *core.Ctx) core.Module {
-	m := &WorkersModule{ctx: ctx}
+	ctx.WebModuleSync.Add(1)
+	m := &workersModule{ctx: ctx}
 	return m
 }
 
-func (m *WorkersModule) Run() {
+func (m *workersModule) Run() {
 	mqtt.NewConnection(m.ctx.MqttClient)
 
-	go func() {
+	go func(m *workersModule) {
+		defer m.CleanUp()
+
 		for {
 			log.Println("[Re]configuring MQTT:", m.ctx.Config.GetCfg().BrokerTCPUrl)
 
@@ -36,21 +39,24 @@ func (m *WorkersModule) Run() {
 
 			m.cleanUpSubscribers()
 		}
-	}()
+	}(m)
 
 }
 
-func (m *WorkersModule) CleanUp() {
+func (m *workersModule) CleanUp() {
 	log.Println("Gracefully closing mqtt workers...")
+
 	if m.ctx.MqttClient.IsConnectionOpen() && m.ctx.MqttClient.IsConnected() {
 		m.cleanUpSubscribers()
 		mqtt.Disconnect(m.ctx.MqttClient)
 	}
+
+	m.ctx.WebModuleSync.Done()
 }
 
-func (m *WorkersModule) cleanUpSubscribers() {
+func (m *workersModule) cleanUpSubscribers() {
 	for _, s := range m.ctx.Config.GetCfg().Subscribers {
-		topic := fmt.Sprintf("apiary/%s/hive/%s", s.ApiaryId, s.HiveId)
+		topic := fmt.Sprintf(core.TopicPath, s.ApiaryId, s.HiveId)
 		topicToDelete, alreadyExists := lo.Find(m.topics, func(t string) bool {
 			return t == topic
 		})
@@ -64,9 +70,9 @@ func (m *WorkersModule) cleanUpSubscribers() {
 	}
 }
 
-func (m *WorkersModule) initializeSubscribers() {
+func (m *workersModule) initializeSubscribers() {
 	for _, s := range m.ctx.Config.GetCfg().Subscribers {
-		topic := fmt.Sprintf("apiary/%s/hive/%s", s.ApiaryId, s.HiveId)
+		topic := fmt.Sprintf(core.TopicPath, s.ApiaryId, s.HiveId)
 		_, alreadyExists := lo.Find(m.topics, func(t string) bool {
 			return t == topic
 		})

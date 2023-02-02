@@ -47,6 +47,7 @@ func WebServe(ctx *c.Ctx) func(*cli.Group, *cli.Command, []string) int {
 
 		interrupt := make(chan os.Signal, 1)
 		signal.Notify(interrupt, os.Interrupt, syscall.SIGTERM)
+		ctx.WebModuleSync.Wait()
 
 		<-interrupt
 

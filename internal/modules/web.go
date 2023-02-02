@@ -26,6 +26,7 @@ type webModule struct {
 }
 
 func NewWebRunner(ctx *core.Ctx) core.Module {
+	ctx.WebModuleSync.Add(1)
 	m := &webModule{ctx}
 	return m
 }
@@ -112,11 +113,12 @@ func (m *webModule) Run() {
 	// Pages
 	ui.Get("/", handlers.WebHomeHandler(m.ctx))
 
-	go func() {
+	go func(m *webModule) {
+		defer m.CleanUp()
 		if err := m.ctx.Router.Listen(fmt.Sprintf("%s:%d", cfg.AppHost, cfg.AppPort)); err != nil {
 			log.Panic(err)
 		}
-	}()
+	}(m)
 }
 
 func (m *webModule) CleanUp() {
@@ -130,4 +132,6 @@ func (m *webModule) CleanUp() {
 			os.Exit(1)
 		}
 	}()
+
+	m.ctx.WebModuleSync.Done()
 }
