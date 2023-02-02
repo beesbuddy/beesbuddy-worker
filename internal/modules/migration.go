@@ -1,12 +1,12 @@
 package modules
 
-import c "github.com/beesbuddy/beesbuddy-worker/internal/core"
+import "github.com/beesbuddy/beesbuddy-worker/internal/core"
 
 type migrationModule struct {
-	app *c.Ctx
+	app *core.Ctx
 }
 
-func NewMigrationRunner(app *c.Ctx) c.Module {
+func NewMigrationRunner(app *core.Ctx) core.Module {
 	m := &migrationModule{app: app}
 	return m
 }
