@@ -22,7 +22,7 @@ func WebServe(group *cli.Group, command *cli.Command, arguments []string) int {
 	app := core.NewApp()
 	var cmd *exec.Cmd
 
-	if !core.GetCfg().IsProd {
+	if core.GetCfg().HotReload {
 		name := "/bin/sh"
 		arg := "-c"
 		command := "npm run hot"

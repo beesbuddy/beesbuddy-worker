@@ -11,6 +11,7 @@ type Config struct {
 	UiHotReloadUrl string        `default:"http://localhost:8080"`
 	IsPrefork      bool          `default:"false"`
 	IsProd         bool          `default:"false"`
+	HotReload      bool          `default:"false"`
 	BrokerTCPUrl   string        `requred:"true"`
 	Admin          dto.UserInput `required:"true"`
 	Subscribers    []Subscriber  `required:"false"`
