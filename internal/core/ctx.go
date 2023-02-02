@@ -2,7 +2,6 @@ package core
 
 import (
 	"log"
-	"sync"
 
 	"github.com/alexedwards/scs/v2"
 	"github.com/beesbuddy/beesbuddy-worker/internal/models"
@@ -24,7 +23,6 @@ type Ctx struct {
 	Services       map[string]interface{}
 	Repositories   map[string]interface{}
 	Config         *c.Config[models.Config]
-	WebModuleSync  sync.WaitGroup
 }
 
 func NewContext(config *c.Config[models.Config]) *Ctx {

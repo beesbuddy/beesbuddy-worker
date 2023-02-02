@@ -15,7 +15,6 @@ type workersModule struct {
 }
 
 func NewWorkersRunner(ctx *core.Ctx) core.Module {
-	ctx.WebModuleSync.Add(1)
 	m := &workersModule{ctx: ctx}
 	return m
 }
@@ -50,8 +49,6 @@ func (m *workersModule) CleanUp() {
 		m.cleanUpSubscribers()
 		mqtt.Disconnect(m.ctx.MqttClient)
 	}
-
-	m.ctx.WebModuleSync.Done()
 }
 
 func (m *workersModule) cleanUpSubscribers() {

@@ -26,7 +26,6 @@ type webModule struct {
 }
 
 func NewWebRunner(ctx *core.Ctx) core.Module {
-	ctx.WebModuleSync.Add(1)
 	m := &webModule{ctx}
 	return m
 }
@@ -132,6 +131,4 @@ func (m *webModule) CleanUp() {
 			os.Exit(1)
 		}
 	}()
-
-	m.ctx.WebModuleSync.Done()
 }
