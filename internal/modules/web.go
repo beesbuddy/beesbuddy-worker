@@ -45,6 +45,7 @@ func (m *webModule) Run() {
 	}))
 
 	apiV1 := router.Group("/api/v1", limiter.New(limiter.Config{Max: 100}))
+
 	// Redirect rules for /api/v1
 	router.Use(redirect.New(redirect.Config{
 		Rules: map[string]string{
@@ -53,14 +54,17 @@ func (m *webModule) Run() {
 		},
 		StatusCode: 301,
 	}))
+
 	// Docs
 	router.Get("/swagger/*", swagger.New(swagger.Config{
 		URL:         "/swagger.json",
 		DeepLinking: true,
 	}))
+
 	// Auth
 	auth := apiV1.Group("/auth")
 	auth.Post("/token", handlers.ApiGenerateToken)
+
 	// Settings
 	settings := apiV1.Group("/settings")
 	settings.Use(jwtware.New(jwtware.Config{
@@ -100,11 +104,12 @@ func (m *webModule) Run() {
 		return docsServer
 	}))
 
-	// Set up ui and inertia for handling vue serving
+	// Set up ui and inertia for handling vue
 	ui := router.Group("/")
 	ui.Use(adaptor.HTTPMiddleware(func(next http.Handler) http.Handler {
 		return m.app.InertiaManager.Middleware(next)
 	}))
+	// Pages
 	ui.Get("/", handlers.HomeHandler(m.app))
 
 	go func() {

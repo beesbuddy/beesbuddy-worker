@@ -3,6 +3,7 @@ package core
 import (
 	"github.com/beesbuddy/beesbuddy-worker/internal/models"
 	c "github.com/leonidasdeim/goconfig"
+	fh "github.com/leonidasdeim/goconfig/pkg/filehandler"
 )
 
 var cfgObject *c.Config[models.Config]
@@ -16,7 +17,8 @@ func GetCfgObject() *c.Config[models.Config] {
 }
 
 func init() {
-	cfg, err := c.Init[models.Config](c.WithName("dev"))
+	h, _ := fh.New(fh.WithName("dev"))
+	cfg, err := c.Init[models.Config](h)
 
 	if err != nil {
 		panic("Unable to load config")

@@ -6,17 +6,20 @@ require (
 	github.com/chmike/securecookie v1.3.4
 	github.com/eclipse/paho.mqtt.golang v1.4.2
 	github.com/gofiber/fiber/v2 v2.41.0
-	github.com/leonidasdeim/goconfig v1.3.5
+	github.com/leonidasdeim/goconfig v1.4.4
 	github.com/petaki/support-go v1.6.0
 )
 
 require (
 	github.com/gofiber/jwt/v3 v3.3.4
-	github.com/gofiber/keyauth/v2 v2.1.30
 	github.com/samber/lo v1.37.0
 )
 
-require golang.org/x/exp v0.0.0-20220303212507-bbda1eaf7a17 // indirect
+require (
+	github.com/pelletier/go-toml/v2 v2.0.6 // indirect
+	golang.org/x/exp v0.0.0-20220303212507-bbda1eaf7a17 // indirect
+	gopkg.in/yaml.v3 v3.0.1 // indirect
+)
 
 require (
 	github.com/KyleBanks/depth v1.2.1 // indirect
@@ -31,7 +34,6 @@ require (
 	github.com/golang-jwt/jwt/v4 v4.4.2
 	github.com/josharian/intern v1.0.0 // indirect
 	github.com/mailru/easyjson v0.7.6 // indirect
-	github.com/stretchr/testify v1.8.1 // indirect
 	github.com/swaggo/files v0.0.0-20210815190702-a29dd2bc99b2 // indirect
 	github.com/swaggo/swag v1.8.1
 	golang.org/x/tools v0.1.12 // indirect
