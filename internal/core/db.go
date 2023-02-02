@@ -3,12 +3,12 @@ package core
 import (
 	"fmt"
 
-	"github.com/beesbuddy/beesbuddy-worker/internal/models"
+	"github.com/beesbuddy/beesbuddy-worker/internal/model"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 )
 
-func NewDatabase(appConfig models.Config) *gorm.DB {
+func NewDatabase(appConfig model.Config) *gorm.DB {
 	var err error
 
 	dsn := fmt.Sprintf("%s.db", appConfig.DbName)

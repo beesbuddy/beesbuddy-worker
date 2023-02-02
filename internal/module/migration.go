@@ -1,10 +1,10 @@
-package modules
+package module
 
 import (
 	"log"
 
 	"github.com/beesbuddy/beesbuddy-worker/internal/core"
-	"github.com/beesbuddy/beesbuddy-worker/internal/models"
+	"github.com/beesbuddy/beesbuddy-worker/internal/model"
 )
 
 type migrationModule struct {
@@ -18,7 +18,7 @@ func NewMigrationRunner(ctx *core.Ctx) core.Module {
 
 func (m *migrationModule) Run() {
 	log.Println("Runing database migtations")
-	var err = m.ctx.Orm.AutoMigrate(&models.User{})
+	var err = m.ctx.Orm.AutoMigrate(&model.User{})
 	if err != nil {
 		log.Fatalln("Failed to migrate `User` entity")
 	}

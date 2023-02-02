@@ -1,4 +1,4 @@
-package modules
+package module
 
 import (
 	"fmt"
@@ -9,7 +9,7 @@ import (
 	swagger "github.com/arsmn/fiber-swagger/v2"
 	"github.com/beesbuddy/beesbuddy-worker/docs"
 	"github.com/beesbuddy/beesbuddy-worker/internal/core"
-	"github.com/beesbuddy/beesbuddy-worker/internal/handlers"
+	"github.com/beesbuddy/beesbuddy-worker/internal/handler"
 	"github.com/beesbuddy/beesbuddy-worker/static"
 	"github.com/gofiber/adaptor/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
@@ -63,7 +63,7 @@ func (m *webModule) Run() {
 
 	// Auth
 	auth := apiV1.Group("/auth")
-	auth.Post("/token", handlers.ApiGenerateToken(m.ctx))
+	auth.Post("/token", handler.ApiGenerateToken(m.ctx))
 
 	// Settings
 	settings := apiV1.Group("/settings")
@@ -71,8 +71,8 @@ func (m *webModule) Run() {
 		SigningKey:   []byte(m.ctx.Config.GetCfg().Secret),
 		ErrorHandler: core.AuthError,
 	}))
-	settings.Get("/subscribers", handlers.ApiGetSubscribers(m.ctx))
-	settings.Post("/subscribers", handlers.ApiCreateSubscriber(m.ctx))
+	settings.Get("/subscribers", handler.ApiGetSubscribers(m.ctx))
+	settings.Post("/subscribers", handler.ApiCreateSubscriber(m.ctx))
 
 	// Set up static file serving
 	var fileServer http.Handler
@@ -110,7 +110,7 @@ func (m *webModule) Run() {
 		return m.ctx.InertiaManager.Middleware(next)
 	}))
 	// Pages
-	ui.Get("/", handlers.WebHomeHandler(m.ctx))
+	ui.Get("/", handler.WebHomeHandler(m.ctx))
 
 	go func(m *webModule) {
 		defer m.CleanUp()

@@ -4,7 +4,8 @@ import (
 	"log"
 
 	"github.com/alexedwards/scs/v2"
-	"github.com/beesbuddy/beesbuddy-worker/internal/models"
+	"github.com/beesbuddy/beesbuddy-worker/internal/model"
+	"github.com/beesbuddy/beesbuddy-worker/internal/repository"
 	"github.com/chmike/securecookie"
 	MQTT "github.com/eclipse/paho.mqtt.golang"
 	"github.com/gofiber/fiber/v2"
@@ -21,13 +22,12 @@ type Ctx struct {
 	SessionManager *scs.SessionManager
 	RememberCookie *securecookie.Obj
 	MqttClient     MQTT.Client
-	Services       map[string]interface{}
-	Repositories   map[string]interface{}
-	Config         *c.Config[models.Config]
+	UserRepository *repository.UserRepository
+	Config         *c.Config[model.Config]
 	Orm            *gorm.DB
 }
 
-func NewContext(config *c.Config[models.Config]) *Ctx {
+func NewContext(config *c.Config[model.Config]) *Ctx {
 	router := fiber.New(fiber.Config{Prefork: config.GetCfg().IsPrefork})
 
 	debug := !config.GetCfg().IsProd
@@ -63,6 +63,7 @@ func NewContext(config *c.Config[models.Config]) *Ctx {
 		MqttClient:     mqttClient,
 		Config:         config,
 		Orm:            gorm,
+		UserRepository: repository.NewUserRepository(gorm),
 	}
 
 	return ctx

@@ -9,7 +9,7 @@ import (
 	"syscall"
 
 	c "github.com/beesbuddy/beesbuddy-worker/internal/core"
-	m "github.com/beesbuddy/beesbuddy-worker/internal/modules"
+	m "github.com/beesbuddy/beesbuddy-worker/internal/module"
 	"github.com/petaki/support-go/cli"
 )
 

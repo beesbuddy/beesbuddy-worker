@@ -1,9 +1,9 @@
-package handlers
+package handler
 
 import (
 	"github.com/beesbuddy/beesbuddy-worker/internal/core"
 	"github.com/beesbuddy/beesbuddy-worker/internal/dto"
-	"github.com/beesbuddy/beesbuddy-worker/internal/models"
+	"github.com/beesbuddy/beesbuddy-worker/internal/model"
 	"github.com/gofiber/fiber/v2"
 	"github.com/samber/lo"
 )
@@ -47,12 +47,12 @@ func ApiCreateSubscriber(ctx *core.Ctx) fiber.Handler {
 
 		newConfig := ctx.Config.GetCfg()
 
-		_, alreadyExists := lo.Find(newConfig.Subscribers, func(s models.Subscriber) bool {
+		_, alreadyExists := lo.Find(newConfig.Subscribers, func(s model.Subscriber) bool {
 			return s.ApiaryId == newSubscriber.ApiaryId && s.HiveId == newSubscriber.HiveId
 		})
 
 		if !alreadyExists {
-			subscriber := models.Subscriber{ApiaryId: newSubscriber.ApiaryId, HiveId: newSubscriber.HiveId}
+			subscriber := model.Subscriber{ApiaryId: newSubscriber.ApiaryId, HiveId: newSubscriber.HiveId}
 			newConfig.Subscribers = append(newConfig.Subscribers, subscriber)
 			ctx.Config.Update(newConfig)
 		}

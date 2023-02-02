@@ -1,11 +1,11 @@
-package handlers
+package handler
 
 import (
 	"time"
 
 	"github.com/beesbuddy/beesbuddy-worker/internal/core"
 	"github.com/beesbuddy/beesbuddy-worker/internal/dto"
-	"github.com/beesbuddy/beesbuddy-worker/internal/models"
+	"github.com/beesbuddy/beesbuddy-worker/internal/model"
 	"github.com/gofiber/fiber/v2"
 	"github.com/golang-jwt/jwt/v4"
 	"github.com/samber/lo"
@@ -54,8 +54,8 @@ func ApiGenerateToken(ctx *core.Ctx) fiber.Handler {
 	}
 }
 
-func getClient(appKey string, clients []models.Client) (models.Client, bool) {
-	return lo.Find(clients, func(client models.Client) bool {
+func getClient(appKey string, clients []model.Client) (model.Client, bool) {
+	return lo.Find(clients, func(client model.Client) bool {
 		return client.AppKey == appKey
 	})
 }

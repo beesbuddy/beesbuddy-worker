@@ -32,24 +32,23 @@ func main() {
 		Version: "main",
 		Groups: []*cli.Group{
 			{
-				Name:  "user",
-				Usage: "User commands",
+				Name:  "make",
+				Usage: "Make commands",
 				Commands: []*cli.Command{
 					{
-						Name:       "user",
-						Usage:      "Run user creation command",
-						HandleFunc: cmd.User(ctx),
-					},
-				},
-			},
-			{
-				Name:  "migration",
-				Usage: "Migration commands",
-				Commands: []*cli.Command{
-					{
-						Name:       "run",
+						Name:       "migration",
 						Usage:      "Run database migration",
 						HandleFunc: cmd.Migrate(ctx),
+					},
+					{
+						Name:  "user",
+						Usage: "Make a user",
+						Arguments: []string{
+							"username",
+							"email",
+							"password",
+						},
+						HandleFunc: cmd.User(ctx),
 					},
 				},
 			},

@@ -1,9 +1,11 @@
-package models
+package model
 
 import (
 	"crypto/md5"
 	"fmt"
 	"time"
+
+	"github.com/beesbuddy/beesbuddy-worker/internal/util"
 
 	"github.com/petaki/support-go/forms"
 )
@@ -19,17 +21,6 @@ type User struct {
 	UpdatedAt     time.Time `gorm:"column:updated_at;type:timestamp;default:null"`
 }
 
-type UserRepository interface {
-	Create(*User) error
-	Find(int) (*User, error)
-	FindAll() ([]*User, error)
-	Update(*User, *User) error
-	UpdateRememberToken(*User, string) error
-	Authenticate(string, string) (*User, error)
-	AuthenticateByRememberToken(int, string) (*User, error)
-	Delete(*User) error
-}
-
 func NewUser() *User {
 	return &User{
 		IsEnabled: true,
@@ -37,30 +28,37 @@ func NewUser() *User {
 }
 
 func UserCreateRules(form *forms.Form) {
-	form.Required("username", "email", "password", "isEnabled")
+	form.Required("username", "email", "password", "is_enabled")
 	form.MatchesPattern("username", forms.UsernameRegexp)
 	form.Min("username", 3)
 	form.Max("username", 20)
 	form.MatchesPattern("email", forms.EmailRegexp)
-	form.Min("password", 8)
+	form.Min("password", 5)
 }
 
 func UserUpdateRules(form *forms.Form) {
-	form.Required("username", "email", "isEnabled")
+	form.Required("username", "email", "is_enabled")
 	form.MatchesPattern("username", forms.UsernameRegexp)
 	form.Min("username", 3)
 	form.Max("username", 20)
 	form.MatchesPattern("email", forms.EmailRegexp)
-	form.Min("password", 8)
+	form.Min("password", 5)
 }
 
-func (u *User) Fill(form *forms.Form) *User {
+func (u *User) Fill(form *forms.Form) (*User, error) {
 	u.Username = form.Data["username"].(string)
 	u.Email = form.Data["email"].(string)
 	u.IsEnabled = form.Data["is_enabled"].(bool)
-	u.Password = form.Data["password"].(string)
 
-	return u
+	hash, err := util.HashPassword(form.Data["password"].(string))
+
+	if err != nil {
+		return nil, err
+	}
+
+	u.Password = hash
+
+	return u, nil
 }
 
 func (u *User) Gravatar(size int) string {
