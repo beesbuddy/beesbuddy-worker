@@ -45,7 +45,7 @@
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/core.ResponseHTTP"
+                                    "$ref": "#/definitions/dto.ResponseHTTP"
                                 },
                                 {
                                     "type": "object",
@@ -61,7 +61,7 @@
                     "503": {
                         "description": "Service Unavailable",
                         "schema": {
-                            "$ref": "#/definitions/core.ResponseHTTP"
+                            "$ref": "#/definitions/dto.ResponseHTTP"
                         }
                     }
                 }
@@ -88,7 +88,7 @@
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/core.ResponseHTTP"
+                                    "$ref": "#/definitions/dto.ResponseHTTP"
                                 },
                                 {
                                     "type": "object",
@@ -107,7 +107,7 @@
                     "503": {
                         "description": "Service Unavailable",
                         "schema": {
-                            "$ref": "#/definitions/core.ResponseHTTP"
+                            "$ref": "#/definitions/dto.ResponseHTTP"
                         }
                     }
                 }
@@ -143,7 +143,7 @@
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/core.ResponseHTTP"
+                                    "$ref": "#/definitions/dto.ResponseHTTP"
                                 },
                                 {
                                     "type": "object",
@@ -162,7 +162,7 @@
                     "503": {
                         "description": "Service Unavailable",
                         "schema": {
-                            "$ref": "#/definitions/core.ResponseHTTP"
+                            "$ref": "#/definitions/dto.ResponseHTTP"
                         }
                     }
                 }
@@ -170,7 +170,15 @@
         }
     },
     "definitions": {
-        "core.ResponseHTTP": {
+        "dto.ClientInput": {
+            "type": "object",
+            "properties": {
+                "appKey": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.ResponseHTTP": {
             "type": "object",
             "properties": {
                 "data": {},
@@ -179,14 +187,6 @@
                 },
                 "success": {
                     "type": "boolean"
-                }
-            }
-        },
-        "dto.ClientInput": {
-            "type": "object",
-            "properties": {
-                "appKey": {
-                    "type": "string"
                 }
             }
         },
@@ -211,9 +211,6 @@
                     "type": "string"
                 },
                 "hiveId": {
-                    "type": "string"
-                },
-                "updatedAt": {
                     "type": "string"
                 }
             }

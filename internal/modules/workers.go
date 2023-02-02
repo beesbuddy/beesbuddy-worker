@@ -10,28 +10,30 @@ import (
 )
 
 type WorkersModule struct {
-	app    *core.App
+	ctx    *core.Ctx
 	topics []string
 }
 
-func NewWorkersRunner(app *core.App) core.Module {
-	m := &WorkersModule{app: app}
+func NewWorkersRunner(ctx *core.Ctx) core.Module {
+	m := &WorkersModule{ctx: ctx}
 	return m
 }
 
 func (m *WorkersModule) Run() {
-	mqtt.NewConnection(m.app.MqttClient)
+	mqtt.NewConnection(m.ctx.MqttClient)
 
 	go func() {
 		for {
-			log.Println("[Re]configuring MQTT:", core.GetCfg().BrokerTCPUrl)
+			log.Println("[Re]configuring MQTT:", m.ctx.Config.GetCfg().BrokerTCPUrl)
 
-			if !m.app.MqttClient.IsConnectionOpen() || !m.app.MqttClient.IsConnected() {
-				mqtt.NewConnection(m.app.MqttClient)
+			if !m.ctx.MqttClient.IsConnectionOpen() || !m.ctx.MqttClient.IsConnected() {
+				mqtt.NewConnection(m.ctx.MqttClient)
 			}
 
 			m.initializeSubscribers()
-			<-core.GetCfgObject().GetSubscriber(core.WorkerKey)
+
+			<-m.ctx.Config.GetSubscriber(core.WorkerKey)
+
 			m.cleanUpSubscribers()
 		}
 	}()
@@ -40,14 +42,14 @@ func (m *WorkersModule) Run() {
 
 func (m *WorkersModule) CleanUp() {
 	log.Println("Gracefully closing mqtt workers...")
-	if m.app.MqttClient.IsConnectionOpen() && m.app.MqttClient.IsConnected() {
+	if m.ctx.MqttClient.IsConnectionOpen() && m.ctx.MqttClient.IsConnected() {
 		m.cleanUpSubscribers()
-		mqtt.Disconnect(m.app.MqttClient)
+		mqtt.Disconnect(m.ctx.MqttClient)
 	}
 }
 
 func (m *WorkersModule) cleanUpSubscribers() {
-	for _, s := range core.GetCfg().Subscribers {
+	for _, s := range m.ctx.Config.GetCfg().Subscribers {
 		topic := fmt.Sprintf("apiary/%s/hive/%s", s.ApiaryId, s.HiveId)
 		topicToDelete, alreadyExists := lo.Find(m.topics, func(t string) bool {
 			return t == topic
@@ -55,7 +57,7 @@ func (m *WorkersModule) cleanUpSubscribers() {
 
 		if alreadyExists {
 			go func(topic string) {
-				mqtt.Unsubscribe(m.app.MqttClient, topicToDelete)
+				mqtt.Unsubscribe(m.ctx.MqttClient, topicToDelete)
 			}(topic)
 		}
 
@@ -63,7 +65,7 @@ func (m *WorkersModule) cleanUpSubscribers() {
 }
 
 func (m *WorkersModule) initializeSubscribers() {
-	for _, s := range core.GetCfg().Subscribers {
+	for _, s := range m.ctx.Config.GetCfg().Subscribers {
 		topic := fmt.Sprintf("apiary/%s/hive/%s", s.ApiaryId, s.HiveId)
 		_, alreadyExists := lo.Find(m.topics, func(t string) bool {
 			return t == topic
@@ -71,7 +73,7 @@ func (m *WorkersModule) initializeSubscribers() {
 
 		if !alreadyExists {
 			go func(topic string) {
-				mqtt.Subscribe(m.app.MqttClient, topic)
+				mqtt.Subscribe(m.ctx.MqttClient, topic)
 			}(topic)
 		}
 	}

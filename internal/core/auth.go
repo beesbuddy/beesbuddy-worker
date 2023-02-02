@@ -1,6 +1,7 @@
 package core
 
 import (
+	"github.com/beesbuddy/beesbuddy-worker/internal/dto"
 	"github.com/gofiber/fiber/v2"
 	"golang.org/x/crypto/bcrypt"
 )
@@ -15,18 +16,18 @@ func CheckPasswordHash(password, hash string) bool {
 	return err == nil
 }
 
-func AuthError(ctx *fiber.Ctx, err error) error {
+func AuthError(f *fiber.Ctx, err error) error {
 	if err.Error() == "Missing or malformed JWT" {
-		return ctx.Status(fiber.StatusBadRequest).
-			JSON(&ResponseHTTP{
+		return f.Status(fiber.StatusBadRequest).
+			JSON(&dto.ResponseHTTP{
 				Success: false,
 				Data:    nil,
 				Message: "Missing or malformed token",
 			})
 	}
 
-	return ctx.Status(fiber.StatusUnauthorized).
-		JSON(&ResponseHTTP{
+	return f.Status(fiber.StatusUnauthorized).
+		JSON(&dto.ResponseHTTP{
 			Success: false,
 			Data:    nil,
 			Message: "Invalid or expired token",

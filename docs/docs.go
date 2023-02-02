@@ -53,7 +53,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/core.ResponseHTTP"
+                                    "$ref": "#/definitions/dto.ResponseHTTP"
                                 },
                                 {
                                     "type": "object",
@@ -69,7 +69,7 @@ const docTemplate = `{
                     "503": {
                         "description": "Service Unavailable",
                         "schema": {
-                            "$ref": "#/definitions/core.ResponseHTTP"
+                            "$ref": "#/definitions/dto.ResponseHTTP"
                         }
                     }
                 }
@@ -96,7 +96,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/core.ResponseHTTP"
+                                    "$ref": "#/definitions/dto.ResponseHTTP"
                                 },
                                 {
                                     "type": "object",
@@ -115,7 +115,7 @@ const docTemplate = `{
                     "503": {
                         "description": "Service Unavailable",
                         "schema": {
-                            "$ref": "#/definitions/core.ResponseHTTP"
+                            "$ref": "#/definitions/dto.ResponseHTTP"
                         }
                     }
                 }
@@ -151,7 +151,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/core.ResponseHTTP"
+                                    "$ref": "#/definitions/dto.ResponseHTTP"
                                 },
                                 {
                                     "type": "object",
@@ -170,7 +170,7 @@ const docTemplate = `{
                     "503": {
                         "description": "Service Unavailable",
                         "schema": {
-                            "$ref": "#/definitions/core.ResponseHTTP"
+                            "$ref": "#/definitions/dto.ResponseHTTP"
                         }
                     }
                 }
@@ -178,7 +178,15 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "core.ResponseHTTP": {
+        "dto.ClientInput": {
+            "type": "object",
+            "properties": {
+                "appKey": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.ResponseHTTP": {
             "type": "object",
             "properties": {
                 "data": {},
@@ -187,14 +195,6 @@ const docTemplate = `{
                 },
                 "success": {
                     "type": "boolean"
-                }
-            }
-        },
-        "dto.ClientInput": {
-            "type": "object",
-            "properties": {
-                "appKey": {
-                    "type": "string"
                 }
             }
         },
@@ -219,9 +219,6 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "hiveId": {
-                    "type": "string"
-                },
-                "updatedAt": {
                     "type": "string"
                 }
             }

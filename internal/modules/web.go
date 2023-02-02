@@ -22,18 +22,18 @@ import (
 )
 
 type webModule struct {
-	app *core.App
+	ctx *core.Ctx
 }
 
-func NewWebRunner(app *core.App) core.Module {
-	m := &webModule{app: app}
+func NewWebRunner(ctx *core.Ctx) core.Module {
+	m := &webModule{ctx}
 	return m
 }
 
 func (m *webModule) Run() {
-	cfg := core.GetCfg()
+	cfg := m.ctx.Config.GetCfg()
 
-	router := m.app.Router
+	router := m.ctx.Router
 
 	// Set up base handlers / middleware
 	router.Use(recover.New())
@@ -63,22 +63,22 @@ func (m *webModule) Run() {
 
 	// Auth
 	auth := apiV1.Group("/auth")
-	auth.Post("/token", handlers.ApiGenerateToken)
+	auth.Post("/token", handlers.ApiGenerateToken(m.ctx))
 
 	// Settings
 	settings := apiV1.Group("/settings")
 	settings.Use(jwtware.New(jwtware.Config{
-		SigningKey:   []byte(core.GetCfg().Secret),
+		SigningKey:   []byte(m.ctx.Config.GetCfg().Secret),
 		ErrorHandler: core.AuthError,
 	}))
-	settings.Get("/subscribers", handlers.ApiGetSubscribers(m.app))
-	settings.Post("/subscribers", handlers.ApiCreateSubscriber(m.app))
+	settings.Get("/subscribers", handlers.ApiGetSubscribers(m.ctx))
+	settings.Post("/subscribers", handlers.ApiCreateSubscriber(m.ctx))
 
 	// Set up static file serving
 	var fileServer http.Handler
 	var docsServer http.Handler
 
-	if core.GetCfg().IsProd {
+	if m.ctx.Config.GetCfg().IsProd {
 		staticFS := http.FS(static.Files)
 		docsFS := http.FS(docs.Files)
 		fileServer = http.FileServer(staticFS)
@@ -107,13 +107,13 @@ func (m *webModule) Run() {
 	// Set up ui and inertia for handling vue
 	ui := router.Group("/")
 	ui.Use(adaptor.HTTPMiddleware(func(next http.Handler) http.Handler {
-		return m.app.InertiaManager.Middleware(next)
+		return m.ctx.InertiaManager.Middleware(next)
 	}))
 	// Pages
-	ui.Get("/", handlers.HomeHandler(m.app))
+	ui.Get("/", handlers.WebHomeHandler(m.ctx))
 
 	go func() {
-		if err := m.app.Router.Listen(fmt.Sprintf("%s:%d", cfg.AppHost, cfg.AppPort)); err != nil {
+		if err := m.ctx.Router.Listen(fmt.Sprintf("%s:%d", cfg.AppHost, cfg.AppPort)); err != nil {
 			log.Panic(err)
 		}
 	}()
@@ -123,7 +123,7 @@ func (m *webModule) CleanUp() {
 	log.Println("Gracefully closing web...")
 
 	go func() {
-		err := m.app.Router.Shutdown()
+		err := m.ctx.Router.Shutdown()
 
 		if err != nil {
 			log.Panic(err)

@@ -3,9 +3,11 @@
 	"AppHost": "127.0.0.1",
 	"AppPort": 4000,
 	"Secret": "change_it",
-	"Clients": [{
-		"AppKey": "change_it"
-	}],
+	"Clients": [
+		{
+			"AppKey": "change_it"
+		}
+	],
 	"Admin": {
 		"Username": "admin",
 		"Password": "$2a$14$KpjKPbg2NEzxbwyG/TTZ7uE3E5yiBw/NiLhrHajS8rX989JN.G.7u",

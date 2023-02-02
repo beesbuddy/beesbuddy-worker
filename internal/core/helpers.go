@@ -7,7 +7,7 @@ import (
 	"github.com/petaki/support-go/mix"
 )
 
-func newMixAndInertiaManager(debug bool, url string) (*mix.Mix, *inertia.Inertia, error) {
+func newMixAndInertiaManager(debug bool, url, appName string) (*mix.Mix, *inertia.Inertia, error) {
 	mixManager := mix.New(url, "./static", "")
 
 	var version string
@@ -32,7 +32,7 @@ func newMixAndInertiaManager(debug bool, url string) (*mix.Mix, *inertia.Inertia
 		views.Templates,
 	)
 
-	inertiaManager.Share("title", GetCfg().AppName)
+	inertiaManager.Share("title", appName)
 	inertiaManager.ShareFunc("asset", func(path string) (string, error) {
 		if debug {
 			return mixManager.Mix(path, "")

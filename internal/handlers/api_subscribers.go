@@ -13,16 +13,16 @@ import (
 // @Description Get subscribers
 // @Tags settings
 // @Produce json
-// @Success 200 {object} core.ResponseHTTP{data=[]models.Subscriber}
-// @Failure 503 {object} core.ResponseHTTP{}
+// @Success 200 {object} dto.ResponseHTTP{data=[]models.Subscriber}
+// @Failure 503 {object} dto.ResponseHTTP{}
 // @Router /settings/subscribers [get]
 // @Security ApiKeyAuth
-func ApiGetSubscribers(app *core.App) fiber.Handler {
-	return func(ctx *fiber.Ctx) error {
-		return ctx.JSON(core.ResponseHTTP{
+func ApiGetSubscribers(ctx *core.Ctx) fiber.Handler {
+	return func(f *fiber.Ctx) error {
+		return f.JSON(dto.ResponseHTTP{
 			Success: true,
 			Message: "Successfully fetched subscribers",
-			Data:    core.GetCfg().Subscribers,
+			Data:    ctx.Config.GetCfg().Subscribers,
 		})
 	}
 }
@@ -32,20 +32,20 @@ func ApiGetSubscribers(app *core.App) fiber.Handler {
 // @Description Create a subscriber
 // @Tags settings
 // @Produce json
-// @Success 200 {object} core.ResponseHTTP{data=[]models.Subscriber}
-// @Failure 503 {object} core.ResponseHTTP{}
+// @Success 200 {object} dto.ResponseHTTP{data=[]models.Subscriber}
+// @Failure 503 {object} dto.ResponseHTTP{}
 // @Param dto.SubscriberInput body dto.SubscriberInput true "Subscriber"
 // @Router /settings/subscribers [post]
 // @Security ApiKeyAuth
-func ApiCreateSubscriber(app *core.App) fiber.Handler {
-	return func(ctx *fiber.Ctx) error {
+func ApiCreateSubscriber(ctx *core.Ctx) fiber.Handler {
+	return func(f *fiber.Ctx) error {
 		newSubscriber := new(dto.SubscriberInput)
 
-		if err := ctx.BodyParser(newSubscriber); err != nil {
-			return ctx.Status(500).JSON(fiber.Map{"status": "error", "message": "Review your input", "data": err})
+		if err := f.BodyParser(newSubscriber); err != nil {
+			return f.Status(500).JSON(fiber.Map{"status": "error", "message": "Review your input", "data": err})
 		}
 
-		newConfig := core.GetCfg()
+		newConfig := ctx.Config.GetCfg()
 
 		_, alreadyExists := lo.Find(newConfig.Subscribers, func(s models.Subscriber) bool {
 			return s.ApiaryId == newSubscriber.ApiaryId && s.HiveId == newSubscriber.HiveId
@@ -54,13 +54,13 @@ func ApiCreateSubscriber(app *core.App) fiber.Handler {
 		if !alreadyExists {
 			subscriber := models.Subscriber{ApiaryId: newSubscriber.ApiaryId, HiveId: newSubscriber.HiveId}
 			newConfig.Subscribers = append(newConfig.Subscribers, subscriber)
-			core.GetCfgObject().Update(newConfig)
+			ctx.Config.Update(newConfig)
 		}
 
-		return ctx.JSON(core.ResponseHTTP{
+		return f.JSON(dto.ResponseHTTP{
 			Success: true,
 			Message: "Registered subscriber for creation",
-			Data:    core.GetCfg().Subscribers,
+			Data:    ctx.Config.GetCfg().Subscribers,
 		})
 	}
 }

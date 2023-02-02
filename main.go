@@ -2,6 +2,7 @@ package main
 
 import (
 	"github.com/beesbuddy/beesbuddy-worker/cmd"
+	"github.com/beesbuddy/beesbuddy-worker/internal/core"
 	"github.com/petaki/support-go/cli"
 )
 
@@ -21,10 +22,37 @@ import (
 // @in header
 // @name Authorization
 func main() {
+	// TODO: Get name from env to have possibility to specify with different environment in mind
+	config := core.NewConfig("dev")
+	// inverse of control magic in context happens
+	ctx := core.NewContext(config)
+
 	(&cli.App{
 		Name:    "BeesBuddy",
 		Version: "main",
 		Groups: []*cli.Group{
+			{
+				Name:  "user",
+				Usage: "User commands",
+				Commands: []*cli.Command{
+					{
+						Name:       "user",
+						Usage:      "Run user creation command",
+						HandleFunc: cmd.User(ctx),
+					},
+				},
+			},
+			{
+				Name:  "migrate",
+				Usage: "Migration commands",
+				Commands: []*cli.Command{
+					{
+						Name:       "migrate",
+						Usage:      "Run database migration",
+						HandleFunc: cmd.Migrate(ctx),
+					},
+				},
+			},
 			{
 				Name:  "web",
 				Usage: "Web commands",
@@ -32,7 +60,7 @@ func main() {
 					{
 						Name:       "serve",
 						Usage:      "Serve the app",
-						HandleFunc: cmd.WebServe,
+						HandleFunc: cmd.WebServe(ctx),
 					},
 				},
 			},

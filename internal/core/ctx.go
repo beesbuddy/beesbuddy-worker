@@ -4,54 +4,61 @@ import (
 	"log"
 
 	"github.com/alexedwards/scs/v2"
+	"github.com/beesbuddy/beesbuddy-worker/internal/models"
 	"github.com/chmike/securecookie"
 	MQTT "github.com/eclipse/paho.mqtt.golang"
 	"github.com/gofiber/fiber/v2"
+	c "github.com/leonidasdeim/goconfig"
 	"github.com/petaki/inertia-go"
 	"github.com/petaki/support-go/mix"
 )
 
-type App struct {
+type Ctx struct {
 	Router         *fiber.App
 	MixManager     *mix.Mix
 	InertiaManager *inertia.Inertia
 	SessionManager *scs.SessionManager
 	RememberCookie *securecookie.Obj
 	MqttClient     MQTT.Client
+	Services       map[string]interface{}
+	Repositories   map[string]interface{}
+	Config         *c.Config[models.Config]
 }
 
-func NewApp() *App {
-	router := fiber.New(fiber.Config{Prefork: GetCfg().IsPrefork})
+func NewContext(config *c.Config[models.Config]) *Ctx {
+	router := fiber.New(fiber.Config{Prefork: config.GetCfg().IsPrefork})
 
-	debug := !GetCfg().IsProd
+	debug := !config.GetCfg().IsProd
 	url := ""
 
 	if debug {
-		url = GetCfg().UiHotReloadUrl
+		url = config.GetCfg().UiHotReloadUrl
 	}
 
 	mixManager, inertiaManager, err := newMixAndInertiaManager(
 		debug,
 		url,
+		config.GetCfg().AppName,
 	)
 
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	opts := MQTT.NewClientOptions().AddBroker(GetCfg().BrokerTCPUrl).SetAutoReconnect(true)
-	client := MQTT.NewClient(opts)
+	opts := MQTT.NewClientOptions().AddBroker(config.GetCfg().BrokerTCPUrl).SetAutoReconnect(true)
+	mqttClient := MQTT.NewClient(opts)
 
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	app := &App{
+	ctx := &Ctx{
 		Router:         router,
 		MixManager:     mixManager,
 		InertiaManager: inertiaManager,
-		MqttClient:     client,
+		MqttClient:     mqttClient,
+		Config:         config,
 	}
 
-	return app
+	return ctx
 }

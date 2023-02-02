@@ -1,4 +1,4 @@
-package core
+package dto
 
 type ResponseHTTP struct {
 	Success bool        `json:"success"`

@@ -1,17 +1,17 @@
 basePath: /api/v1
 definitions:
-  core.ResponseHTTP:
+  dto.ClientInput:
+    properties:
+      appKey:
+        type: string
+    type: object
+  dto.ResponseHTTP:
     properties:
       data: {}
       message:
         type: string
       success:
         type: boolean
-    type: object
-  dto.ClientInput:
-    properties:
-      appKey:
-        type: string
     type: object
   dto.SubscriberInput:
     properties:
@@ -27,8 +27,6 @@ definitions:
       createdAt:
         type: string
       hiveId:
-        type: string
-      updatedAt:
         type: string
     type: object
 info:
@@ -61,7 +59,7 @@ paths:
           description: OK
           schema:
             allOf:
-            - $ref: '#/definitions/core.ResponseHTTP'
+            - $ref: '#/definitions/dto.ResponseHTTP'
             - properties:
                 data:
                   type: string
@@ -69,7 +67,7 @@ paths:
         "503":
           description: Service Unavailable
           schema:
-            $ref: '#/definitions/core.ResponseHTTP'
+            $ref: '#/definitions/dto.ResponseHTTP'
       summary: Authenticate client
       tags:
       - auth
@@ -83,7 +81,7 @@ paths:
           description: OK
           schema:
             allOf:
-            - $ref: '#/definitions/core.ResponseHTTP'
+            - $ref: '#/definitions/dto.ResponseHTTP'
             - properties:
                 data:
                   items:
@@ -93,7 +91,7 @@ paths:
         "503":
           description: Service Unavailable
           schema:
-            $ref: '#/definitions/core.ResponseHTTP'
+            $ref: '#/definitions/dto.ResponseHTTP'
       security:
       - ApiKeyAuth: []
       summary: Get active subscribers
@@ -115,7 +113,7 @@ paths:
           description: OK
           schema:
             allOf:
-            - $ref: '#/definitions/core.ResponseHTTP'
+            - $ref: '#/definitions/dto.ResponseHTTP'
             - properties:
                 data:
                   items:
@@ -125,7 +123,7 @@ paths:
         "503":
           description: Service Unavailable
           schema:
-            $ref: '#/definitions/core.ResponseHTTP'
+            $ref: '#/definitions/dto.ResponseHTTP'
       security:
       - ApiKeyAuth: []
       summary: Create a new subscriber
