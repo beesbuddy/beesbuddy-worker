@@ -23,59 +23,6 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/auth/token": {
-            "post": {
-                "description": "Create a token",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "auth"
-                ],
-                "summary": "Authenticate client",
-                "deprecated": true,
-                "parameters": [
-                    {
-                        "description": "ClientInput",
-                        "name": "dto.ClientInput",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/dto.ClientInput"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/dto.ResponseHTTP"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "type": "string"
-                                        }
-                                    }
-                                }
-                            ]
-                        }
-                    },
-                    "503": {
-                        "description": "Service Unavailable",
-                        "schema": {
-                            "$ref": "#/definitions/dto.ResponseHTTP"
-                        }
-                    }
-                }
-            }
-        },
         "/settings/subscribers": {
             "get": {
                 "security": [
@@ -105,7 +52,7 @@ const docTemplate = `{
                                         "data": {
                                             "type": "array",
                                             "items": {
-                                                "$ref": "#/definitions/model.Subscriber"
+                                                "$ref": "#/definitions/settings.Subscriber"
                                             }
                                         }
                                     }
@@ -160,7 +107,7 @@ const docTemplate = `{
                                         "data": {
                                             "type": "array",
                                             "items": {
-                                                "$ref": "#/definitions/model.Subscriber"
+                                                "$ref": "#/definitions/settings.Subscriber"
                                             }
                                         }
                                     }
@@ -179,14 +126,6 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "dto.ClientInput": {
-            "type": "object",
-            "properties": {
-                "appKey": {
-                    "type": "string"
-                }
-            }
-        },
         "dto.ResponseHTTP": {
             "type": "object",
             "properties": {
@@ -210,7 +149,7 @@ const docTemplate = `{
                 }
             }
         },
-        "model.Subscriber": {
+        "settings.Subscriber": {
             "type": "object",
             "properties": {
                 "apiaryId": {

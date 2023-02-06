@@ -6,7 +6,7 @@ import (
 
 	"github.com/beesbuddy/beesbuddy-worker/internal"
 	"github.com/beesbuddy/beesbuddy-worker/internal/app"
-	"github.com/beesbuddy/beesbuddy-worker/internal/model"
+	"github.com/beesbuddy/beesbuddy-worker/internal/app/settings"
 	"github.com/petaki/support-go/cli"
 	"github.com/samber/lo"
 )
@@ -21,7 +21,7 @@ func Token(ctx *app.Ctx) func(*cli.Group, *cli.Command, []string) int {
 
 		clients := ctx.Config.GetCfg().Clients
 
-		client, ok := lo.Find(clients, func(client model.Client) bool {
+		client, ok := lo.Find(clients, func(client settings.Client) bool {
 			return client.AppKey == parsed[0]
 		})
 

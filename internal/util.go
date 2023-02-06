@@ -2,6 +2,7 @@ package internal
 
 import (
 	"encoding/hex"
+	"os"
 	"time"
 
 	"github.com/beesbuddy/beesbuddy-worker/internal/dto"
@@ -58,4 +59,12 @@ func AuthError(f *fiber.Ctx, err error) error {
 			Data:    nil,
 			Message: "Invalid or expired token",
 		})
+}
+
+func GetEnv(key, fallback string) string {
+	value := os.Getenv(key)
+	if len(value) == 0 {
+		return fallback
+	}
+	return value
 }

@@ -1,10 +1,5 @@
 basePath: /api/v1
 definitions:
-  dto.ClientInput:
-    properties:
-      appKey:
-        type: string
-    type: object
   dto.ResponseHTTP:
     properties:
       data: {}
@@ -20,7 +15,7 @@ definitions:
       hiveId:
         type: string
     type: object
-  model.Subscriber:
+  settings.Subscriber:
     properties:
       apiaryId:
         type: string
@@ -40,38 +35,6 @@ info:
   title: BeesBuddy worker
   version: "1.0"
 paths:
-  /auth/token:
-    post:
-      consumes:
-      - application/json
-      deprecated: true
-      description: Create a token
-      parameters:
-      - description: ClientInput
-        in: body
-        name: dto.ClientInput
-        required: true
-        schema:
-          $ref: '#/definitions/dto.ClientInput'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            allOf:
-            - $ref: '#/definitions/dto.ResponseHTTP'
-            - properties:
-                data:
-                  type: string
-              type: object
-        "503":
-          description: Service Unavailable
-          schema:
-            $ref: '#/definitions/dto.ResponseHTTP'
-      summary: Authenticate client
-      tags:
-      - auth
   /settings/subscribers:
     get:
       description: Get subscribers
@@ -86,7 +49,7 @@ paths:
             - properties:
                 data:
                   items:
-                    $ref: '#/definitions/model.Subscriber'
+                    $ref: '#/definitions/settings.Subscriber'
                   type: array
               type: object
         "503":
@@ -118,7 +81,7 @@ paths:
             - properties:
                 data:
                   items:
-                    $ref: '#/definitions/model.Subscriber'
+                    $ref: '#/definitions/settings.Subscriber'
                   type: array
               type: object
         "503":

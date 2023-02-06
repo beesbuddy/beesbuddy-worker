@@ -10,11 +10,7 @@ import (
 	"github.com/beesbuddy/beesbuddy-worker/docs"
 	"github.com/beesbuddy/beesbuddy-worker/internal"
 	"github.com/beesbuddy/beesbuddy-worker/internal/app"
-	"github.com/beesbuddy/beesbuddy-worker/internal/core"
 	"github.com/beesbuddy/beesbuddy-worker/internal/web/handler/api"
-	"github.com/beesbuddy/beesbuddy-worker/internal/web/handler/middleware"
-	"github.com/beesbuddy/beesbuddy-worker/internal/web/handler/ui"
-	"github.com/beesbuddy/beesbuddy-worker/static"
 	"github.com/gofiber/adaptor/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/fiber/v2/middleware/limiter"
@@ -26,23 +22,23 @@ import (
 )
 
 type webModule struct {
-	ctx *app.Ctx
+	appCtx *app.Ctx
 }
 
-func NewWebRunner(ctx *app.Ctx) core.Module {
+func NewWebRunner(ctx *app.Ctx) app.Module {
 	m := &webModule{ctx}
 	return m
 }
 
 func (m *webModule) Run() {
-	cfg := m.ctx.Config.GetCfg()
+	appCtx := m.appCtx
+	cfg := appCtx.Config.GetCfg()
+	fiber := appCtx.Fiber
 
-	// TODO: Move to routes file
-	fiber := m.ctx.Fiber
-
-	// Set up base handlers / middleware
+	// set up handlers / middlewares
 	fiber.Use(recover.New())
 	fiber.Use(logger.New())
+
 	fiber.Get("/dashboard", monitor.New())
 	fiber.Use(cors.New(cors.Config{
 		AllowOrigins: "*",
@@ -51,78 +47,48 @@ func (m *webModule) Run() {
 
 	apiV1 := fiber.Group("/api/v1", limiter.New(limiter.Config{Max: 100}))
 
-	// Redirect rules for /api/v1
+	// redirect rules for docs
 	fiber.Use(redirect.New(redirect.Config{
 		Rules: map[string]string{
+			"/":      "/swagger/index.html",
 			"/docs/": "/swagger/index.html",
 			"/docs":  "/swagger/index.html",
 		},
 		StatusCode: 301,
 	}))
 
-	// Docs
+	// docs
 	fiber.Get("/swagger/*", swagger.New(swagger.Config{
 		URL:         "/swagger.json",
 		DeepLinking: true,
 	}))
 
-	// Auth
-	auth := apiV1.Group("/auth")
-	auth.Post("/token", api.ApiGenerateToken(m.ctx))
-
-	// Settings
+	// settings
 	settings := apiV1.Group("/settings")
 	settings.Use(jwtware.New(jwtware.Config{
-		SigningKey:   []byte(m.ctx.Config.GetCfg().Secret),
+		SigningKey:   []byte(m.appCtx.Config.GetCfg().Secret),
 		ErrorHandler: internal.AuthError,
 	}))
-	settings.Get("/subscribers", api.ApiGetSubscribers(m.ctx))
-	settings.Post("/subscribers", api.ApiCreateSubscriber(m.ctx))
+	settings.Get("/subscribers", api.ApiGetSubscribers(appCtx))
+	settings.Post("/subscribers", api.ApiCreateSubscriber(appCtx))
 
-	// Set up static file serving
-	var fileServer http.Handler
+	// set up static file serving
 	var docsServer http.Handler
 
-	if m.ctx.Config.GetCfg().IsProd {
-		staticFS := http.FS(static.Files)
+	if appCtx.Config.GetCfg().IsProd {
 		docsFS := http.FS(docs.Files)
-		fileServer = http.FileServer(staticFS)
 		docsServer = http.FileServer(docsFS)
 	} else {
-		fileServer = http.FileServer(http.Dir("./static/"))
 		docsServer = http.FileServer(http.Dir("./docs/"))
 	}
 
-	fiber.Use("/css/", adaptor.HTTPMiddleware(func(next http.Handler) http.Handler {
-		return fileServer
-	}))
-	fiber.Use("/js/", adaptor.HTTPMiddleware(func(next http.Handler) http.Handler {
-		return fileServer
-	}))
-	fiber.Use("/images/", adaptor.HTTPMiddleware(func(next http.Handler) http.Handler {
-		return fileServer
-	}))
-	fiber.Use("/favicon.ico", adaptor.HTTPMiddleware(func(next http.Handler) http.Handler {
-		return fileServer
-	}))
 	fiber.Use("/swagger.json", adaptor.HTTPMiddleware(func(next http.Handler) http.Handler {
 		return docsServer
 	}))
 
-	// Set up ui and inertia for handling vue
-	front := fiber.Group("/")
-	front.Use(adaptor.HTTPMiddleware(func(next http.Handler) http.Handler {
-		return m.ctx.InertiaManager.Middleware(next)
-	}))
-
-	// Pages
-	front.Get("/login", ui.WebGetLoginHandler(m.ctx))
-	front.Post("/login", ui.WebPostLoginHandler(m.ctx))
-	front.Get("/", middleware.RedirectIfNotAuthenticated(m.ctx), ui.WebGetHomeHandler(m.ctx))
-
 	go func(m *webModule) {
 		defer m.CleanUp()
-		if err := m.ctx.Fiber.Listen(fmt.Sprintf("%s:%d", cfg.AppHost, cfg.AppPort)); err != nil {
+		if err := m.appCtx.Fiber.Listen(fmt.Sprintf("%s:%d", cfg.AppHost, cfg.AppPort)); err != nil {
 			log.Panic(err)
 		}
 	}(m)
@@ -132,7 +98,7 @@ func (m *webModule) CleanUp() {
 	log.Println("Gracefully closing web...")
 
 	go func() {
-		err := m.ctx.Fiber.Shutdown()
+		err := m.appCtx.Fiber.Shutdown()
 
 		if err != nil {
 			log.Panic(err)

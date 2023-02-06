@@ -6,7 +6,6 @@ import (
 
 	"github.com/beesbuddy/beesbuddy-worker/internal"
 	"github.com/beesbuddy/beesbuddy-worker/internal/app"
-	"github.com/beesbuddy/beesbuddy-worker/internal/core"
 	"github.com/samber/lo"
 )
 
@@ -15,7 +14,7 @@ type workersModule struct {
 	topics []string
 }
 
-func NewWorkersRunner(ctx *app.Ctx) core.Module {
+func NewWorkersRunner(ctx *app.Ctx) app.Module {
 	m := &workersModule{ctx: ctx}
 	return m
 }

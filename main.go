@@ -2,8 +2,8 @@ package main
 
 import (
 	"github.com/beesbuddy/beesbuddy-worker/cmd"
+	"github.com/beesbuddy/beesbuddy-worker/internal"
 	"github.com/beesbuddy/beesbuddy-worker/internal/app"
-	"github.com/beesbuddy/beesbuddy-worker/internal/core"
 	"github.com/petaki/support-go/cli"
 )
 
@@ -23,8 +23,7 @@ import (
 // @in header
 // @name Authorization
 func main() {
-	// TODO: Get name from env to have possibility to specify with different environment in mind
-	config := core.NewConfig("dev")
+	config := app.NewConfig(internal.GetEnv("BEESBUDDY_ENV", "dev"))
 	// inverse of control magic in context happens
 	ctx := app.NewContext(config)
 
@@ -36,21 +35,6 @@ func main() {
 				Name:  "make",
 				Usage: "Make commands",
 				Commands: []*cli.Command{
-					{
-						Name:       "migration",
-						Usage:      "Run database migration",
-						HandleFunc: cmd.Migrate(ctx),
-					},
-					{
-						Name:  "user",
-						Usage: "Make a user",
-						Arguments: []string{
-							"username",
-							"email",
-							"password",
-						},
-						HandleFunc: cmd.User(ctx),
-					},
 					{
 						Name:  "token",
 						Usage: "Make a jwt token",

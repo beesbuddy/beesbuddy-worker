@@ -1,9 +1,11 @@
 package api
 
 import (
+	"time"
+
 	"github.com/beesbuddy/beesbuddy-worker/internal/app"
+	"github.com/beesbuddy/beesbuddy-worker/internal/app/settings"
 	"github.com/beesbuddy/beesbuddy-worker/internal/dto"
-	"github.com/beesbuddy/beesbuddy-worker/internal/model"
 	"github.com/gofiber/fiber/v2"
 	"github.com/samber/lo"
 )
@@ -13,7 +15,7 @@ import (
 // @Description Get subscribers
 // @Tags settings
 // @Produce json
-// @Success 200 {object} dto.ResponseHTTP{data=[]model.Subscriber}
+// @Success 200 {object} dto.ResponseHTTP{data=[]settings.Subscriber}
 // @Failure 503 {object} dto.ResponseHTTP{}
 // @Router /settings/subscribers [get]
 // @Security ApiKeyAuth
@@ -32,7 +34,7 @@ func ApiGetSubscribers(ctx *app.Ctx) fiber.Handler {
 // @Description Create a subscriber
 // @Tags settings
 // @Produce json
-// @Success 200 {object} dto.ResponseHTTP{data=[]model.Subscriber}
+// @Success 200 {object} dto.ResponseHTTP{data=[]settings.Subscriber}
 // @Failure 503 {object} dto.ResponseHTTP{}
 // @Param dto.SubscriberInput body dto.SubscriberInput true "Subscriber"
 // @Router /settings/subscribers [post]
@@ -47,12 +49,12 @@ func ApiCreateSubscriber(ctx *app.Ctx) fiber.Handler {
 
 		newConfig := ctx.Config.GetCfg()
 
-		_, alreadyExists := lo.Find(newConfig.Subscribers, func(s model.Subscriber) bool {
+		_, alreadyExists := lo.Find(newConfig.Subscribers, func(s settings.Subscriber) bool {
 			return s.ApiaryId == newSubscriber.ApiaryId && s.HiveId == newSubscriber.HiveId
 		})
 
 		if !alreadyExists {
-			subscriber := model.Subscriber{ApiaryId: newSubscriber.ApiaryId, HiveId: newSubscriber.HiveId}
+			subscriber := settings.Subscriber{ApiaryId: newSubscriber.ApiaryId, HiveId: newSubscriber.HiveId, CreatedAt: time.Now()}
 			newConfig.Subscribers = append(newConfig.Subscribers, subscriber)
 			ctx.Config.Update(newConfig)
 		}

@@ -1,6 +1,6 @@
 # Beesbuddy worker
 
-Application responsible for dispatching messages from MQTT to time series database and WS
+Application responsible for dispatching messages from MQTT to time series database and broadcast provider. It have simple rest api to perform settings for workers (adding, removing subscribers) on the fly.
 
 ## How to generate swagger documentation
 
@@ -21,7 +21,8 @@ swag init
 ```sh
 air -c dev.air.default.toml web serve
 ```
+## How to run app with make
 
-If in configuration `HotReload` is set to true, app will try to run ui with hot reload via `npm run hot` command. I found it usefull at specific cases for me.
-
-You can alway run ui with hot reload by using make or just executing `npm run hot`.
+```sh
+make dev
+```

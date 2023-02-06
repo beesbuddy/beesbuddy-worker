@@ -1,4 +1,4 @@
-package core
+package app
 
 type Module interface {
 	Run()
