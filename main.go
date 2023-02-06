@@ -50,6 +50,14 @@ func main() {
 						},
 						HandleFunc: cmd.User(ctx),
 					},
+					{
+						Name:  "token",
+						Usage: "Make a jwt token",
+						Arguments: []string{
+							"key",
+						},
+						HandleFunc: cmd.Token(ctx),
+					},
 				},
 			},
 			{
