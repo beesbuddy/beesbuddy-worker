@@ -26,3 +26,15 @@ air -c dev.air.default.toml web serve
 ```sh
 make dev
 ```
+
+## How to build
+
+Change client secret from `e641c5f30441812f79130ff0518fbff2` to something else. Warning `e641c5f30441812f79130ff0518fbff2` must be used only for local development.
+
+Apply changes to your needs in dev.default.json
+
+Run make command:
+
+```bash
+make build
+```
