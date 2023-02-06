@@ -13,7 +13,7 @@ import (
 // @Description Get subscribers
 // @Tags settings
 // @Produce json
-// @Success 200 {object} dto.ResponseHTTP{data=[]models.Subscriber}
+// @Success 200 {object} dto.ResponseHTTP{data=[]model.Subscriber}
 // @Failure 503 {object} dto.ResponseHTTP{}
 // @Router /settings/subscribers [get]
 // @Security ApiKeyAuth
@@ -32,7 +32,7 @@ func ApiGetSubscribers(ctx *core.Ctx) fiber.Handler {
 // @Description Create a subscriber
 // @Tags settings
 // @Produce json
-// @Success 200 {object} dto.ResponseHTTP{data=[]models.Subscriber}
+// @Success 200 {object} dto.ResponseHTTP{data=[]model.Subscriber}
 // @Failure 503 {object} dto.ResponseHTTP{}
 // @Param dto.SubscriberInput body dto.SubscriberInput true "Subscriber"
 // @Router /settings/subscribers [post]

@@ -28,6 +28,7 @@
                     "auth"
                 ],
                 "summary": "Authenticate client",
+                "deprecated": true,
                 "parameters": [
                     {
                         "description": "ClientInput",
@@ -96,7 +97,7 @@
                                         "data": {
                                             "type": "array",
                                             "items": {
-                                                "$ref": "#/definitions/models.Subscriber"
+                                                "$ref": "#/definitions/model.Subscriber"
                                             }
                                         }
                                     }
@@ -151,7 +152,7 @@
                                         "data": {
                                             "type": "array",
                                             "items": {
-                                                "$ref": "#/definitions/models.Subscriber"
+                                                "$ref": "#/definitions/model.Subscriber"
                                             }
                                         }
                                     }
@@ -201,7 +202,7 @@
                 }
             }
         },
-        "models.Subscriber": {
+        "model.Subscriber": {
             "type": "object",
             "properties": {
                 "apiaryId": {

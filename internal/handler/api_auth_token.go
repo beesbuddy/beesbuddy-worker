@@ -16,6 +16,7 @@ import (
 // @Description Create a token
 // @Tags auth
 // @Accept json
+// @Deprecated true
 // @Produce json
 // @Success 200 {object} dto.ResponseHTTP{data=string}
 // @Failure 503 {object} dto.ResponseHTTP{}

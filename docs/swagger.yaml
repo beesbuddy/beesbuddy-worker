@@ -20,7 +20,7 @@ definitions:
       hiveId:
         type: string
     type: object
-  models.Subscriber:
+  model.Subscriber:
     properties:
       apiaryId:
         type: string
@@ -44,6 +44,7 @@ paths:
     post:
       consumes:
       - application/json
+      deprecated: true
       description: Create a token
       parameters:
       - description: ClientInput
@@ -85,7 +86,7 @@ paths:
             - properties:
                 data:
                   items:
-                    $ref: '#/definitions/models.Subscriber'
+                    $ref: '#/definitions/model.Subscriber'
                   type: array
               type: object
         "503":
@@ -117,7 +118,7 @@ paths:
             - properties:
                 data:
                   items:
-                    $ref: '#/definitions/models.Subscriber'
+                    $ref: '#/definitions/model.Subscriber'
                   type: array
               type: object
         "503":

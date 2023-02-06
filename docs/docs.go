@@ -36,6 +36,7 @@ const docTemplate = `{
                     "auth"
                 ],
                 "summary": "Authenticate client",
+                "deprecated": true,
                 "parameters": [
                     {
                         "description": "ClientInput",
@@ -104,7 +105,7 @@ const docTemplate = `{
                                         "data": {
                                             "type": "array",
                                             "items": {
-                                                "$ref": "#/definitions/models.Subscriber"
+                                                "$ref": "#/definitions/model.Subscriber"
                                             }
                                         }
                                     }
@@ -159,7 +160,7 @@ const docTemplate = `{
                                         "data": {
                                             "type": "array",
                                             "items": {
-                                                "$ref": "#/definitions/models.Subscriber"
+                                                "$ref": "#/definitions/model.Subscriber"
                                             }
                                         }
                                     }
@@ -209,7 +210,7 @@ const docTemplate = `{
                 }
             }
         },
-        "models.Subscriber": {
+        "model.Subscriber": {
             "type": "object",
             "properties": {
                 "apiaryId": {
