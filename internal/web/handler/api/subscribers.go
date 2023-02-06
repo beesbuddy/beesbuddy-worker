@@ -1,7 +1,7 @@
-package handler
+package api
 
 import (
-	"github.com/beesbuddy/beesbuddy-worker/internal/core"
+	"github.com/beesbuddy/beesbuddy-worker/internal/app"
 	"github.com/beesbuddy/beesbuddy-worker/internal/dto"
 	"github.com/beesbuddy/beesbuddy-worker/internal/model"
 	"github.com/gofiber/fiber/v2"
@@ -17,7 +17,7 @@ import (
 // @Failure 503 {object} dto.ResponseHTTP{}
 // @Router /settings/subscribers [get]
 // @Security ApiKeyAuth
-func ApiGetSubscribers(ctx *core.Ctx) fiber.Handler {
+func ApiGetSubscribers(ctx *app.Ctx) fiber.Handler {
 	return func(f *fiber.Ctx) error {
 		return f.JSON(dto.ResponseHTTP{
 			Success: true,
@@ -37,7 +37,7 @@ func ApiGetSubscribers(ctx *core.Ctx) fiber.Handler {
 // @Param dto.SubscriberInput body dto.SubscriberInput true "Subscriber"
 // @Router /settings/subscribers [post]
 // @Security ApiKeyAuth
-func ApiCreateSubscriber(ctx *core.Ctx) fiber.Handler {
+func ApiCreateSubscriber(ctx *app.Ctx) fiber.Handler {
 	return func(f *fiber.Ctx) error {
 		newSubscriber := new(dto.SubscriberInput)
 

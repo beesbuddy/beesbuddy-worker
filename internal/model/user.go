@@ -5,8 +5,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/beesbuddy/beesbuddy-worker/internal/util"
-
+	"github.com/beesbuddy/beesbuddy-worker/internal"
 	"github.com/petaki/support-go/forms"
 )
 
@@ -50,7 +49,7 @@ func (u *User) Fill(form *forms.Form) (*User, error) {
 	u.Email = form.Data["email"].(string)
 	u.IsEnabled = form.Data["is_enabled"].(bool)
 
-	hash, err := util.HashPassword(form.Data["password"].(string))
+	hash, err := internal.HashPassword(form.Data["password"].(string))
 
 	if err != nil {
 		return nil, err

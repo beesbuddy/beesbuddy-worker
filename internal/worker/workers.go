@@ -1,26 +1,27 @@
-package module
+package worker
 
 import (
 	"fmt"
 	"log"
 
+	"github.com/beesbuddy/beesbuddy-worker/internal"
+	"github.com/beesbuddy/beesbuddy-worker/internal/app"
 	"github.com/beesbuddy/beesbuddy-worker/internal/core"
-	"github.com/beesbuddy/beesbuddy-worker/internal/mqtt"
 	"github.com/samber/lo"
 )
 
 type workersModule struct {
-	ctx    *core.Ctx
+	ctx    *app.Ctx
 	topics []string
 }
 
-func NewWorkersRunner(ctx *core.Ctx) core.Module {
+func NewWorkersRunner(ctx *app.Ctx) core.Module {
 	m := &workersModule{ctx: ctx}
 	return m
 }
 
 func (m *workersModule) Run() {
-	mqtt.NewConnection(m.ctx.MqttClient)
+	NewConnection(m.ctx.MqttClient)
 
 	go func(m *workersModule) {
 		defer m.CleanUp()
@@ -29,12 +30,12 @@ func (m *workersModule) Run() {
 			log.Println("[Re]configuring MQTT:", m.ctx.Config.GetCfg().BrokerTCPUrl)
 
 			if !m.ctx.MqttClient.IsConnectionOpen() || !m.ctx.MqttClient.IsConnected() {
-				mqtt.NewConnection(m.ctx.MqttClient)
+				NewConnection(m.ctx.MqttClient)
 			}
 
 			m.initializeSubscribers()
 
-			<-m.ctx.Config.GetSubscriber(core.WorkerKey)
+			<-m.ctx.Config.GetSubscriber(internal.WorkerKey)
 
 			m.cleanUpSubscribers()
 		}
@@ -46,20 +47,20 @@ func (m *workersModule) CleanUp() {
 
 	if m.ctx.MqttClient.IsConnectionOpen() && m.ctx.MqttClient.IsConnected() {
 		m.cleanUpSubscribers()
-		mqtt.Disconnect(m.ctx.MqttClient)
+		Disconnect(m.ctx.MqttClient)
 	}
 }
 
 func (m *workersModule) cleanUpSubscribers() {
 	for _, s := range m.ctx.Config.GetCfg().Subscribers {
-		topic := fmt.Sprintf(core.TopicPath, s.ApiaryId, s.HiveId)
+		topic := fmt.Sprintf(internal.TopicPath, s.ApiaryId, s.HiveId)
 		topicToDelete, alreadyExists := lo.Find(m.topics, func(t string) bool {
 			return t == topic
 		})
 
 		if alreadyExists {
 			go func(topic string) {
-				mqtt.Unsubscribe(m.ctx.MqttClient, topicToDelete)
+				Unsubscribe(m.ctx.MqttClient, topicToDelete)
 			}(topic)
 		}
 
@@ -68,14 +69,14 @@ func (m *workersModule) cleanUpSubscribers() {
 
 func (m *workersModule) initializeSubscribers() {
 	for _, s := range m.ctx.Config.GetCfg().Subscribers {
-		topic := fmt.Sprintf(core.TopicPath, s.ApiaryId, s.HiveId)
+		topic := fmt.Sprintf(internal.TopicPath, s.ApiaryId, s.HiveId)
 		_, alreadyExists := lo.Find(m.topics, func(t string) bool {
 			return t == topic
 		})
 
 		if !alreadyExists {
 			go func(topic string) {
-				mqtt.Subscribe(m.ctx.MqttClient, topic)
+				Subscribe(m.ctx.MqttClient, topic)
 			}(topic)
 		}
 	}

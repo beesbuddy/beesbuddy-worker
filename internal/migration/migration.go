@@ -3,16 +3,17 @@ package module
 import (
 	"log"
 
+	"github.com/beesbuddy/beesbuddy-worker/internal/app"
 	"github.com/beesbuddy/beesbuddy-worker/internal/core"
 	"github.com/beesbuddy/beesbuddy-worker/internal/model"
 )
 
 type migrationModule struct {
-	ctx *core.Ctx
+	ctx *app.Ctx
 }
 
-func NewMigrationRunner(ctx *core.Ctx) core.Module {
-	m := &migrationModule{ctx}
+func NewMigrationRunner(app *app.Ctx) core.Module {
+	m := &migrationModule{app}
 	return m
 }
 

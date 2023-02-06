@@ -1,12 +1,12 @@
 package cmd
 
 import (
-	c "github.com/beesbuddy/beesbuddy-worker/internal/core"
-	m "github.com/beesbuddy/beesbuddy-worker/internal/module"
+	"github.com/beesbuddy/beesbuddy-worker/internal/app"
+	migration "github.com/beesbuddy/beesbuddy-worker/internal/migration"
 	"github.com/petaki/support-go/cli"
 )
 
-func Migrate(ctx *c.Ctx) func(*cli.Group, *cli.Command, []string) int {
+func Migrate(ctx *app.Ctx) func(*cli.Group, *cli.Command, []string) int {
 	return func(group *cli.Group, command *cli.Command, arguments []string) int {
 		_, err := command.Parse(arguments)
 
@@ -14,7 +14,7 @@ func Migrate(ctx *c.Ctx) func(*cli.Group, *cli.Command, []string) int {
 			return command.PrintHelp(group)
 		}
 
-		migration := m.NewMigrationRunner(ctx)
+		migration := migration.NewMigrationRunner(ctx)
 		migration.Run()
 
 		return cli.Success

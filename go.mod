@@ -5,7 +5,7 @@ go 1.19
 require (
 	github.com/chmike/securecookie v1.3.4
 	github.com/eclipse/paho.mqtt.golang v1.4.2
-	github.com/gofiber/fiber/v2 v2.41.0
+	github.com/gofiber/fiber/v2 v2.42.0
 	github.com/leonidasdeim/goconfig v1.4.4
 	github.com/petaki/support-go v1.6.0
 )
@@ -17,10 +17,15 @@ require (
 )
 
 require (
+	github.com/google/uuid v1.3.0 // indirect
 	github.com/jinzhu/inflection v1.0.0 // indirect
 	github.com/jinzhu/now v1.1.5 // indirect
 	github.com/mattn/go-sqlite3 v1.14.15 // indirect
 	github.com/pelletier/go-toml/v2 v2.0.6 // indirect
+	github.com/philhofer/fwd v1.1.1 // indirect
+	github.com/savsgio/dictpool v0.0.0-20221023140959-7bf2e61cea94 // indirect
+	github.com/savsgio/gotils v0.0.0-20220530130905-52f3993e8d6d // indirect
+	github.com/tinylib/msgp v1.1.6 // indirect
 	golang.org/x/exp v0.0.0-20220303212507-bbda1eaf7a17 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
@@ -45,7 +50,6 @@ require (
 )
 
 require (
-	github.com/alexedwards/scs/v2 v2.5.0
 	github.com/andybalholm/brotli v1.0.4 // indirect
 	github.com/go-playground/locales v0.14.0 // indirect
 	github.com/go-playground/universal-translator v0.18.0 // indirect
@@ -60,7 +64,7 @@ require (
 	github.com/petaki/inertia-go v1.4.0
 	github.com/rivo/uniseg v0.4.3 // indirect
 	github.com/valyala/bytebufferpool v1.0.0 // indirect
-	github.com/valyala/fasthttp v1.43.0 // indirect
+	github.com/valyala/fasthttp v1.44.0 // indirect
 	github.com/valyala/tcplisten v1.0.0 // indirect
 	golang.org/x/crypto v0.4.0
 	golang.org/x/net v0.4.0 // indirect

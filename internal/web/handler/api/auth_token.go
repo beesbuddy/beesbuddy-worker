@@ -1,9 +1,9 @@
-package handler
+package api
 
 import (
 	"time"
 
-	"github.com/beesbuddy/beesbuddy-worker/internal/core"
+	"github.com/beesbuddy/beesbuddy-worker/internal/app"
 	"github.com/beesbuddy/beesbuddy-worker/internal/dto"
 	"github.com/beesbuddy/beesbuddy-worker/internal/model"
 	"github.com/gofiber/fiber/v2"
@@ -22,7 +22,7 @@ import (
 // @Failure 503 {object} dto.ResponseHTTP{}
 // @Param dto.ClientInput body dto.ClientInput true "ClientInput"
 // @Router /auth/token [post]
-func ApiGenerateToken(ctx *core.Ctx) fiber.Handler {
+func ApiGenerateToken(ctx *app.Ctx) fiber.Handler {
 	return func(f *fiber.Ctx) error {
 		var input dto.ClientInput
 

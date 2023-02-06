@@ -2,6 +2,7 @@ package main
 
 import (
 	"github.com/beesbuddy/beesbuddy-worker/cmd"
+	"github.com/beesbuddy/beesbuddy-worker/internal/app"
 	"github.com/beesbuddy/beesbuddy-worker/internal/core"
 	"github.com/petaki/support-go/cli"
 )
@@ -25,7 +26,7 @@ func main() {
 	// TODO: Get name from env to have possibility to specify with different environment in mind
 	config := core.NewConfig("dev")
 	// inverse of control magic in context happens
-	ctx := core.NewContext(config)
+	ctx := app.NewContext(config)
 
 	(&cli.App{
 		Name:    "BeesBuddy",

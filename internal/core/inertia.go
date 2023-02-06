@@ -7,7 +7,7 @@ import (
 	"github.com/petaki/support-go/mix"
 )
 
-func newMixAndInertiaManager(debug bool, url, appName string) (*mix.Mix, *inertia.Inertia, error) {
+func NewMixAndInertiaManager(debug bool, url, appName string) (*mix.Mix, *inertia.Inertia, error) {
 	mixManager := mix.New(url, "./static", "")
 
 	var version string

@@ -3,13 +3,13 @@ package cmd
 import (
 	"fmt"
 
-	c "github.com/beesbuddy/beesbuddy-worker/internal/core"
+	"github.com/beesbuddy/beesbuddy-worker/internal/app"
 	"github.com/beesbuddy/beesbuddy-worker/internal/model"
 	"github.com/petaki/support-go/cli"
 	"github.com/petaki/support-go/forms"
 )
 
-func User(ctx *c.Ctx) func(*cli.Group, *cli.Command, []string) int {
+func User(ctx *app.Ctx) func(*cli.Group, *cli.Command, []string) int {
 	return func(group *cli.Group, command *cli.Command, arguments []string) int {
 		enabled := command.FlagSet().Bool("enabled", true, "User Enabled")
 

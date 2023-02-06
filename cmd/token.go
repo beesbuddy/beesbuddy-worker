@@ -4,14 +4,14 @@ import (
 	"fmt"
 	"log"
 
-	c "github.com/beesbuddy/beesbuddy-worker/internal/core"
+	"github.com/beesbuddy/beesbuddy-worker/internal"
+	"github.com/beesbuddy/beesbuddy-worker/internal/app"
 	"github.com/beesbuddy/beesbuddy-worker/internal/model"
-	"github.com/beesbuddy/beesbuddy-worker/internal/util"
 	"github.com/petaki/support-go/cli"
 	"github.com/samber/lo"
 )
 
-func Token(ctx *c.Ctx) func(*cli.Group, *cli.Command, []string) int {
+func Token(ctx *app.Ctx) func(*cli.Group, *cli.Command, []string) int {
 	return func(group *cli.Group, command *cli.Command, arguments []string) int {
 		parsed, err := command.Parse(arguments)
 
@@ -32,7 +32,7 @@ func Token(ctx *c.Ctx) func(*cli.Group, *cli.Command, []string) int {
 
 		secret := ctx.Config.GetCfg().Secret
 
-		token, err := util.GenerateJWTToken(client.AppKey, secret)
+		token, err := internal.GenerateJWTToken(client.AppKey, secret)
 
 		if err != nil {
 			return cli.Failure

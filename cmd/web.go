@@ -8,12 +8,13 @@ import (
 	"runtime"
 	"syscall"
 
-	c "github.com/beesbuddy/beesbuddy-worker/internal/core"
-	m "github.com/beesbuddy/beesbuddy-worker/internal/module"
+	"github.com/beesbuddy/beesbuddy-worker/internal/app"
+	"github.com/beesbuddy/beesbuddy-worker/internal/web"
+	"github.com/beesbuddy/beesbuddy-worker/internal/worker"
 	"github.com/petaki/support-go/cli"
 )
 
-func WebServe(ctx *c.Ctx) func(*cli.Group, *cli.Command, []string) int {
+func WebServe(ctx *app.Ctx) func(*cli.Group, *cli.Command, []string) int {
 	return func(group *cli.Group, command *cli.Command, arguments []string) int {
 		_, err := command.Parse(arguments)
 		if err != nil {
@@ -40,9 +41,9 @@ func WebServe(ctx *c.Ctx) func(*cli.Group, *cli.Command, []string) int {
 			}
 		}
 
-		workersRunner := m.NewWorkersRunner(ctx)
+		workersRunner := worker.NewWorkersRunner(ctx)
 		workersRunner.Run()
-		webRunner := m.NewWebRunner(ctx)
+		webRunner := web.NewWebRunner(ctx)
 		webRunner.Run()
 
 		interrupt := make(chan os.Signal, 1)
