@@ -100,8 +100,6 @@ github.com/otiai10/mint v1.3.0/go.mod h1:F5AjcsTsWUqX+Na9fpHb52P8pcRX2CI6A3ctIT9
 github.com/otiai10/mint v1.3.3/go.mod h1:/yxELlJQ0ufhjUwhshSj+wFjZ78CnZ48/1wtmBH1OTc=
 github.com/pelletier/go-toml/v2 v2.0.6 h1:nrzqCb7j9cDFj2coyLNLaZuJTLjWjlaz6nvTvIwycIU=
 github.com/pelletier/go-toml/v2 v2.0.6/go.mod h1:eumQOmlWiOPt5WriQQqoM5y18pDHwha2N+QD+EUNTek=
-github.com/petaki/inertia-go v1.4.0 h1:fDcjfsPqJtEIg9bnJE8OfKohcIplwsH/PRbhMnmMc30=
-github.com/petaki/inertia-go v1.4.0/go.mod h1:PlOrLP4Ahna2JRjG0E0WXE8CQOjKkf6cAUfJBCCvX2c=
 github.com/petaki/support-go v1.6.0 h1:28qN+PvXcHlfkKQIqobqs9gBQlxl5Lr5WKv7FrXTFcI=
 github.com/petaki/support-go v1.6.0/go.mod h1:A8kOuYWYPDRVjJrqk6MC4bIORSO5kIs8xFgaoamGNsE=
 github.com/philhofer/fwd v1.1.1 h1:GdGcTjf5RNAxwS4QLsiMzJYj5KEvPJD3Abr261yRQXQ=

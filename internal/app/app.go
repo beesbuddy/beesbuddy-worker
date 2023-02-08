@@ -7,14 +7,10 @@ import (
 	MQTT "github.com/eclipse/paho.mqtt.golang"
 	"github.com/gofiber/fiber/v2"
 	"github.com/leonidasdeim/goconfig"
-	"github.com/petaki/inertia-go"
-	"github.com/petaki/support-go/mix"
 )
 
 type Ctx struct {
 	Fiber          *fiber.App
-	MixManager     *mix.Mix
-	InertiaManager *inertia.Inertia
 	SessionManager *scs.SessionManager
 	RememberCookie *securecookie.Obj
 	MqttClient     MQTT.Client
