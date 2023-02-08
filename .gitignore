@@ -37,3 +37,6 @@ dev.toml
 # Ignore ui build directory
 /static/
 node_modules
+
+# Application binary
+beesbuddy-worker
