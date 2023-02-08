@@ -11,7 +11,7 @@ import (
 	"github.com/petaki/support-go/cli"
 )
 
-func WebServe(ctx *app.Ctx) func(*cli.Group, *cli.Command, []string) int {
+func WrokerServe(ctx *app.Ctx) func(*cli.Group, *cli.Command, []string) int {
 	return func(group *cli.Group, command *cli.Command, arguments []string) int {
 		_, err := command.Parse(arguments)
 		if err != nil {

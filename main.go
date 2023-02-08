@@ -25,7 +25,7 @@ import (
 func main() {
 	config := app.NewConfig(internal.GetEnv("BEESBUDDY_ENV", "dev"))
 	// inverse of control magic in context happens
-	ctx := app.NewContext(config)
+	appCtx := app.NewContext(config)
 
 	(&cli.App{
 		Name:    "BeesBuddy",
@@ -41,18 +41,18 @@ func main() {
 						Arguments: []string{
 							"key",
 						},
-						HandleFunc: cmd.Token(ctx),
+						HandleFunc: cmd.Token(appCtx),
 					},
 				},
 			},
 			{
-				Name:  "web",
-				Usage: "Web commands",
+				Name:  "worker",
+				Usage: "Worker commands",
 				Commands: []*cli.Command{
 					{
 						Name:       "serve",
 						Usage:      "Serve the app",
-						HandleFunc: cmd.WebServe(ctx),
+						HandleFunc: cmd.WrokerServe(appCtx),
 					},
 				},
 			},
