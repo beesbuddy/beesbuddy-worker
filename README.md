@@ -4,27 +4,28 @@ Application responsible for dispatching messages from MQTT to time series databa
 
 ## How to generate swagger documentation
 
-First of all you need to install swaggo with:
+First of all you need to install swaggo and air with:
 
-```sh
-go install github.com/swaggo/swag/cmd/swag@latest
+```bash
+$ go install github.com/swaggo/swag/cmd/swag@latest
+$ go install github.com/cosmtrek/air@latest
 ```
 
 Then you need to run:
 
-```sh
-swag init
+```bash
+$ swag init
 ```
 
 ## How to run app with air
 
-```sh
-air -c dev.air.default.toml web serve
+```bash
+$ air -c dev.air.default.toml web serve
 ```
 ## How to run app with make
 
-```sh
-make dev
+```bash
+$ make dev
 ```
 
 ## How to build
@@ -36,5 +37,5 @@ Apply changes to your needs in dev.default.json
 Run make command:
 
 ```bash
-make build
+$ make build
 ```
