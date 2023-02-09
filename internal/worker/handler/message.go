@@ -1,4 +1,4 @@
-package worker
+package handler
 
 import (
 	"log"
@@ -12,7 +12,7 @@ var DefaultMessageHandler MQTT.MessageHandler = func(client MQTT.Client, msg MQT
 	log.Println("########################################################")
 }
 
-var TstorageMessageHandler MQTT.MessageHandler = func(client MQTT.Client, msg MQTT.Message) {
+var PersistMessageHandler MQTT.MessageHandler = func(client MQTT.Client, msg MQTT.Message) {
 	log.Printf("Received message from topic: %s\n", msg.Topic())
-	// TODO: Implement logic to store payload in tstorage engine.
+	// TODO: Implement logic to store payload in tstorage engine and to send message to influxdb
 }

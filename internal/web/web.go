@@ -10,7 +10,7 @@ import (
 	"github.com/beesbuddy/beesbuddy-worker/docs"
 	"github.com/beesbuddy/beesbuddy-worker/internal"
 	"github.com/beesbuddy/beesbuddy-worker/internal/app"
-	"github.com/beesbuddy/beesbuddy-worker/internal/web/handler/api"
+	"github.com/beesbuddy/beesbuddy-worker/internal/web/handler"
 	"github.com/gofiber/adaptor/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/fiber/v2/middleware/limiter"
@@ -69,8 +69,8 @@ func (m *webModule) Run() {
 		SigningKey:   []byte(m.appCtx.Config.GetCfg().Secret),
 		ErrorHandler: internal.AuthError,
 	}))
-	settings.Get("/subscribers", api.ApiGetSubscribers(appCtx))
-	settings.Post("/subscribers", api.ApiCreateSubscriber(appCtx))
+	settings.Get("/subscribers", handler.ApiGetSubscribers(appCtx))
+	settings.Post("/subscribers", handler.ApiCreateSubscriber(appCtx))
 
 	// set up static file serving
 	var docsServer http.Handler
