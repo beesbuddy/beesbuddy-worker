@@ -40,3 +40,6 @@ node_modules
 
 # Application binary
 beesbuddy-worker
+
+# Default ts database path
+/data/
