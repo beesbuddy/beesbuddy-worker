@@ -5,9 +5,7 @@ import (
 	"os"
 	"time"
 
-	"github.com/beesbuddy/beesbuddy-worker/internal/dto"
 	"github.com/chmike/securecookie"
-	"github.com/gofiber/fiber/v2"
 	"github.com/golang-jwt/jwt/v4"
 	"golang.org/x/crypto/bcrypt"
 )
@@ -41,24 +39,6 @@ func GenerateJWTToken(appClientKey, secret string) (string, error) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 
 	return token.SignedString([]byte(secret))
-}
-
-func AuthError(f *fiber.Ctx, err error) error {
-	if err.Error() == "Missing or malformed JWT" {
-		return f.Status(fiber.StatusBadRequest).
-			JSON(&dto.ResponseHTTP{
-				Success: false,
-				Data:    nil,
-				Message: "Missing or malformed token",
-			})
-	}
-
-	return f.Status(fiber.StatusUnauthorized).
-		JSON(&dto.ResponseHTTP{
-			Success: false,
-			Data:    nil,
-			Message: "Invalid or expired token",
-		})
 }
 
 func GetEnv(key, fallback string) string {

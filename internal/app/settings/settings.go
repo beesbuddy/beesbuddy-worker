@@ -12,7 +12,7 @@ type AppSettings struct {
 	IsProd       bool         `default:"false"`
 	BrokerTCPUrl string       `requred:"true"`
 	Subscribers  []Subscriber `required:"false"`
-	DbName       string       `default:"beesbuddy"`
+	StoragePath  string       `default:"./data"`
 }
 
 type Client struct {

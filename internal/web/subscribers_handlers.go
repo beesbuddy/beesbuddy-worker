@@ -1,11 +1,11 @@
-package handler
+package web
 
 import (
 	"time"
 
 	"github.com/beesbuddy/beesbuddy-worker/internal/app"
 	"github.com/beesbuddy/beesbuddy-worker/internal/app/settings"
-	"github.com/beesbuddy/beesbuddy-worker/internal/dto"
+	"github.com/beesbuddy/beesbuddy-worker/internal/web/dto"
 	"github.com/gofiber/fiber/v2"
 	"github.com/samber/lo"
 )

@@ -10,7 +10,6 @@ import (
 	"github.com/beesbuddy/beesbuddy-worker/docs"
 	"github.com/beesbuddy/beesbuddy-worker/internal"
 	"github.com/beesbuddy/beesbuddy-worker/internal/app"
-	"github.com/beesbuddy/beesbuddy-worker/internal/web/handler"
 	"github.com/gofiber/adaptor/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/fiber/v2/middleware/limiter"
@@ -21,16 +20,16 @@ import (
 	"github.com/gofiber/redirect/v2"
 )
 
-type webModule struct {
+type webCtx struct {
 	appCtx *app.Ctx
 }
 
-func NewWebRunner(ctx *app.Ctx) app.Module {
-	m := &webModule{ctx}
+func NewWebRunner(ctx *app.Ctx) internal.ModuleCtx {
+	m := &webCtx{ctx}
 	return m
 }
 
-func (m *webModule) Run() {
+func (m *webCtx) Run() {
 	appCtx := m.appCtx
 	cfg := appCtx.Config.GetCfg()
 	fiber := appCtx.Fiber
@@ -67,10 +66,10 @@ func (m *webModule) Run() {
 	settings := apiV1.Group("/settings")
 	settings.Use(jwtware.New(jwtware.Config{
 		SigningKey:   []byte(m.appCtx.Config.GetCfg().Secret),
-		ErrorHandler: internal.AuthError,
+		ErrorHandler: AuthError,
 	}))
-	settings.Get("/subscribers", handler.ApiGetSubscribers(appCtx))
-	settings.Post("/subscribers", handler.ApiCreateSubscriber(appCtx))
+	settings.Get("/subscribers", ApiGetSubscribers(appCtx))
+	settings.Post("/subscribers", ApiCreateSubscriber(appCtx))
 
 	// set up static file serving
 	var docsServer http.Handler
@@ -86,7 +85,7 @@ func (m *webModule) Run() {
 		return docsServer
 	}))
 
-	go func(m *webModule) {
+	go func(m *webCtx) {
 		defer m.CleanUp()
 		if err := m.appCtx.Fiber.Listen(fmt.Sprintf("%s:%d", cfg.AppHost, cfg.AppPort)); err != nil {
 			log.Panic(err)
@@ -94,7 +93,7 @@ func (m *webModule) Run() {
 	}(m)
 }
 
-func (m *webModule) CleanUp() {
+func (m *webCtx) CleanUp() {
 	log.Println("Gracefully closing web...")
 
 	go func() {

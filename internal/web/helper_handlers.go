@@ -1,4 +1,4 @@
-package handler
+package web
 
 import (
 	"errors"
@@ -7,6 +7,7 @@ import (
 	"runtime/debug"
 
 	"github.com/beesbuddy/beesbuddy-worker/internal/app"
+	"github.com/beesbuddy/beesbuddy-worker/internal/web/dto"
 	"github.com/gofiber/fiber/v2"
 	"github.com/petaki/support-go/forms"
 )
@@ -41,4 +42,22 @@ func FormNetError(appCtx *app.Ctx, w http.ResponseWriter, err error) {
 	} else {
 		ServerHTTPError(appCtx, w, err)
 	}
+}
+
+func AuthError(f *fiber.Ctx, err error) error {
+	if err.Error() == "Missing or malformed JWT" {
+		return f.Status(fiber.StatusBadRequest).
+			JSON(&dto.ResponseHTTP{
+				Success: false,
+				Data:    nil,
+				Message: "Missing or malformed token",
+			})
+	}
+
+	return f.Status(fiber.StatusUnauthorized).
+		JSON(&dto.ResponseHTTP{
+			Success: false,
+			Data:    nil,
+			Message: "Invalid or expired token",
+		})
 }
