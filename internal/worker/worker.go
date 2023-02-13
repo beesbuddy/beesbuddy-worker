@@ -15,6 +15,7 @@ type workerCtx struct {
 	appCtx  *app.Ctx
 	storage tstorage.Storage
 	topics  []string
+	queue   chan int64
 }
 
 func NewWorkersRunner(appCtx *app.Ctx) internal.ModuleCtx {
@@ -27,7 +28,9 @@ func NewWorkersRunner(appCtx *app.Ctx) internal.ModuleCtx {
 		panic("unable to create storage")
 	}
 
-	m := &workerCtx{appCtx: appCtx, storage: storage}
+	queue := make(chan int64, 100)
+
+	m := &workerCtx{appCtx: appCtx, storage: storage, queue: queue}
 	NewConnection(m.appCtx.MqttClient)
 	return m
 }
