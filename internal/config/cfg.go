@@ -1,4 +1,4 @@
-package settings
+package config
 
 import (
 	"github.com/beesbuddy/beesbuddy-worker/internal"
@@ -6,9 +6,9 @@ import (
 	"github.com/leonidasdeim/goconfig/pkg/filehandler"
 )
 
-func NewConfig(configName string) *goconfig.Config[AppSettings] {
+func NewConfig(configName string) *goconfig.Config[AppPreferences] {
 	h, _ := filehandler.New(filehandler.WithName(configName))
-	cfg, err := goconfig.Init[AppSettings](h)
+	cfg, err := goconfig.Init[AppPreferences](h)
 
 	if err != nil {
 		panic("Unable to load config")

@@ -7,7 +7,7 @@ import (
 	"runtime/debug"
 
 	"github.com/beesbuddy/beesbuddy-worker/internal/app"
-	"github.com/beesbuddy/beesbuddy-worker/internal/web/dto"
+	"github.com/beesbuddy/beesbuddy-worker/internal/dto"
 	"github.com/gofiber/fiber/v2"
 	"github.com/petaki/support-go/forms"
 )

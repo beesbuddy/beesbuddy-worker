@@ -4,8 +4,8 @@ import (
 	"time"
 
 	"github.com/beesbuddy/beesbuddy-worker/internal/app"
-	"github.com/beesbuddy/beesbuddy-worker/internal/app/settings"
-	"github.com/beesbuddy/beesbuddy-worker/internal/web/dto"
+	"github.com/beesbuddy/beesbuddy-worker/internal/config"
+	"github.com/beesbuddy/beesbuddy-worker/internal/dto"
 	"github.com/gofiber/fiber/v2"
 	"github.com/samber/lo"
 )
@@ -49,12 +49,12 @@ func ApiCreateSubscriber(ctx *app.Ctx) fiber.Handler {
 
 		newConfig := ctx.Config.GetCfg()
 
-		_, alreadyExists := lo.Find(newConfig.Subscribers, func(s settings.Subscriber) bool {
+		_, alreadyExists := lo.Find(newConfig.Subscribers, func(s config.Subscriber) bool {
 			return s.ApiaryId == newSubscriber.ApiaryId && s.HiveId == newSubscriber.HiveId
 		})
 
 		if !alreadyExists {
-			subscriber := settings.Subscriber{ApiaryId: newSubscriber.ApiaryId, HiveId: newSubscriber.HiveId, CreatedAt: time.Now()}
+			subscriber := config.Subscriber{ApiaryId: newSubscriber.ApiaryId, HiveId: newSubscriber.HiveId, CreatedAt: time.Now()}
 			newConfig.Subscribers = append(newConfig.Subscribers, subscriber)
 			ctx.Config.Update(newConfig)
 		}

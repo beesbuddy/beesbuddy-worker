@@ -1,8 +1,8 @@
-package settings
+package config
 
 import "time"
 
-type AppSettings struct {
+type AppPreferences struct {
 	AppName             string       `default:"BeesBuddy Worker"`
 	AppHost             string       `default:"0.0.0.0"`
 	AppPort             int          `default:"4000"`

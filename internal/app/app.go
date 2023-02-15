@@ -1,7 +1,7 @@
 package app
 
 import (
-	"github.com/beesbuddy/beesbuddy-worker/internal/app/settings"
+	"github.com/beesbuddy/beesbuddy-worker/internal/config"
 	MQTT "github.com/eclipse/paho.mqtt.golang"
 	"github.com/gofiber/fiber/v2"
 	influxdb2 "github.com/influxdata/influxdb-client-go/v2"
@@ -11,11 +11,11 @@ import (
 type Ctx struct {
 	Fiber          *fiber.App
 	MqttClient     MQTT.Client
-	Config         *goconfig.Config[settings.AppSettings]
+	Config         *goconfig.Config[config.AppPreferences]
 	InlfuxDbClient influxdb2.Client
 }
 
-func NewContext(config *goconfig.Config[settings.AppSettings]) *Ctx {
+func NewContext(config *goconfig.Config[config.AppPreferences]) *Ctx {
 	router := fiber.New(fiber.Config{Prefork: config.GetCfg().IsPrefork})
 
 	opts := MQTT.NewClientOptions().AddBroker(config.GetCfg().BrokerTCPUrl).SetAutoReconnect(true)
