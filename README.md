@@ -42,5 +42,4 @@ $ make build
 
 ## TODO
 
-* Implement message handler logic (sending metrics to influx db, persisting metrics in local storage for archive purpose);
-* Add health check handler;
+* Implement message handler logic (sending metrics to influx db);
