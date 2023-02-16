@@ -19,11 +19,13 @@ require (
 	github.com/deepmap/oapi-codegen v1.8.2 // indirect
 	github.com/google/uuid v1.3.0 // indirect
 	github.com/influxdata/line-protocol v0.0.0-20200327222509-2487e7298839 // indirect
+	github.com/kardianos/osext v0.0.0-20190222173326-2bc1f35cddc0 // indirect
 	github.com/pelletier/go-toml/v2 v2.0.6 // indirect
 	github.com/philhofer/fwd v1.1.2 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/savsgio/dictpool v0.0.0-20221023140959-7bf2e61cea94 // indirect
 	github.com/savsgio/gotils v0.0.0-20230208104028-c358bd845dee // indirect
+	github.com/sevlyar/go-daemon v0.1.6 // indirect
 	github.com/tinylib/msgp v1.1.8 // indirect
 	golang.org/x/exp v0.0.0-20220303212507-bbda1eaf7a17 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect

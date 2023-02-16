@@ -86,17 +86,16 @@ func (w *webCtx) Run() {
 		return docsServer
 	}))
 
-	go func(m *webCtx) {
-		defer m.CleanUp()
-		if err := m.appCtx.Fiber.Listen(fmt.Sprintf("%s:%d", cfg.AppHost, cfg.AppPort)); err != nil {
+	go func(w *webCtx) {
+		if err := w.appCtx.Fiber.Listen(fmt.Sprintf("%s:%d", cfg.AppHost, cfg.AppPort)); err != nil {
 			log.Error.Println(err)
 			panic(err)
 		}
 	}(w)
 }
 
-func (w *webCtx) CleanUp() {
-	log.Info.Println("Gracefully closing web...")
+func (w *webCtx) Flush() {
+	log.Info.Println("gracefully closing web...")
 
 	go func() {
 		err := w.appCtx.Fiber.Shutdown()

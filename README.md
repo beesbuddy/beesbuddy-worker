@@ -42,4 +42,4 @@ $ make build
 
 ## TODO
 
-* Implement message handler logic (sending metrics to influx db);
+* Implement deletion of subscriber

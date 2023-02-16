@@ -1,24 +1,24 @@
 package worker
 
 import (
-	"context"
 	"fmt"
-	"strconv"
 	"time"
 
 	"github.com/beesbuddy/beesbuddy-worker/internal"
 	"github.com/beesbuddy/beesbuddy-worker/internal/app"
 	"github.com/beesbuddy/beesbuddy-worker/internal/log"
 	MQTT "github.com/eclipse/paho.mqtt.golang"
+	influxdb2 "github.com/influxdata/influxdb-client-go/v2"
 	"github.com/nakabonne/tstorage"
 	"github.com/samber/lo"
 )
 
 type workerCtx struct {
-	appCtx  *app.Ctx
-	storage tstorage.Storage
-	topics  []string
-	queue   chan metrics
+	appCtx         *app.Ctx
+	storage        tstorage.Storage
+	topics         []string
+	queue          chan metrics
+	influxDbClient influxdb2.Client
 }
 
 func NewWorkersRunner(appCtx *app.Ctx) internal.Ctx {
@@ -31,13 +31,15 @@ func NewWorkersRunner(appCtx *app.Ctx) internal.Ctx {
 		tstorage.WithDataPath(appCtx.Pref.GetConfig().StoragePath),
 	)
 
+	influxDbClient := influxdb2.NewClient(config.InfluxDbURL, config.InfluxDbAccessToken)
+
 	if err != nil {
 		panic("unable to create storage")
 	}
 
 	queue := make(chan metrics, internal.WorkerChanBuffer)
 
-	m := &workerCtx{appCtx: appCtx, storage: storage, queue: queue}
+	m := &workerCtx{appCtx: appCtx, storage: storage, queue: queue, influxDbClient: influxDbClient}
 	NewConnection(m.appCtx.MqttClient)
 	return m
 }
@@ -68,7 +70,7 @@ func (w *workerCtx) Run() {
 	}
 }
 
-func (w *workerCtx) CleanUp() {
+func (w *workerCtx) Flush() {
 	log.Info.Println("gracefully closing mqtt workers...")
 
 	if w.appCtx.MqttClient.IsConnectionOpen() && w.appCtx.MqttClient.IsConnected() {
@@ -77,6 +79,7 @@ func (w *workerCtx) CleanUp() {
 	}
 
 	w.storage.Close()
+	w.influxDbClient.Close()
 }
 
 func (w *workerCtx) cleanUpSubscribers() {
@@ -122,52 +125,5 @@ func (w *workerCtx) Subscribe(c MQTT.Client, topic string) {
 	if token := c.Subscribe(topic, 0, w.PersistMessageHandler()); token.Wait() && token.Error() != nil {
 		log.Error.Fatal(token.Error())
 		panic(token.Error())
-	}
-}
-
-func (w *workerCtx) persist(m metrics) error {
-	ctx, cancel := context.WithTimeout(context.Background(), time.Duration(internal.WorkerTimeout)*time.Second)
-	defer cancel()
-
-	labels := []tstorage.Label{
-		{Name: "ApriaryId", Value: m.ApiaryId},
-		{Name: "HiveId", Value: m.HiveId},
-	}
-
-	w.storeMetric("temperature", m.Temperature, labels)
-	w.storeMetric("humidity", m.Humidity, labels)
-	w.storeMetric("weight", m.Weight, labels)
-
-	ctx.Done()
-	return nil
-}
-
-func (w *workerCtx) storageWorker() {
-	for msq := range w.queue {
-		log.Debug.Println("try to persist metrics: ", msq)
-		err := w.persist(msq)
-		if err != nil {
-			log.Error.Print(err)
-		}
-	}
-}
-
-func (w *workerCtx) storeMetric(name, value string, labels []tstorage.Label) {
-	v, err := strconv.ParseFloat(value, 64)
-
-	if err != nil {
-		log.Error.Println("unable to parse temperature for ", labels)
-	} else {
-		err = w.storage.InsertRows([]tstorage.Row{
-			{
-				Metric:    name,
-				Labels:    labels,
-				DataPoint: tstorage.DataPoint{Timestamp: time.Now().Unix(), Value: v},
-			},
-		})
-
-		if err != nil {
-			log.Error.Println("unable to store temperature for ", labels)
-		}
 	}
 }

@@ -16,6 +16,7 @@ type AppPreferences struct {
 	InfluxDbAccessToken string       `default:"change_it"`
 	InfluxDbURL         string       `default:"http://localhost:8086"`
 	InfluxDbOrg         string       `default:"BeesBuddy"`
+	InfluxDbBucket      string       `default:"apiaries"`
 	StorageWorkersCount int          `default:"2"`
 	PartitionDuration   int64        `default:"1"`
 }

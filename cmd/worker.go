@@ -1,11 +1,9 @@
 package cmd
 
 import (
-	"os"
-	"os/signal"
-	"syscall"
-
 	"github.com/beesbuddy/beesbuddy-worker/internal/app"
+	"github.com/beesbuddy/beesbuddy-worker/internal/log"
+	"github.com/beesbuddy/beesbuddy-worker/internal/shutdown"
 	"github.com/beesbuddy/beesbuddy-worker/internal/web"
 	"github.com/beesbuddy/beesbuddy-worker/internal/worker"
 	"github.com/petaki/support-go/cli"
@@ -23,13 +21,13 @@ func WrokerServe(ctx *app.Ctx) func(*cli.Group, *cli.Command, []string) int {
 		webRunner := web.NewWebRunner(ctx)
 		webRunner.Run()
 
-		interrupt := make(chan os.Signal, 1)
-		signal.Notify(interrupt, os.Interrupt, syscall.SIGTERM)
+		// Add shutdown handlers
+		shutdown.Handle(webRunner.Flush)
+		shutdown.Handle(workersRunner.Flush)
+		shutdown.Handle(log.Flush)
 
-		<-interrupt
-
-		workersRunner.CleanUp()
-		webRunner.CleanUp()
+		// Init shutdown. It will also make application running till interrupt signal will be received.
+		shutdown.Init(cli.Success)
 
 		return cli.Success
 	}
