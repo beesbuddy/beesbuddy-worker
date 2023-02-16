@@ -52,7 +52,7 @@ const docTemplate = `{
                                         "data": {
                                             "type": "array",
                                             "items": {
-                                                "$ref": "#/definitions/settings.Subscriber"
+                                                "$ref": "#/definitions/dto.SubscriberOutput"
                                             }
                                         }
                                     }
@@ -107,7 +107,7 @@ const docTemplate = `{
                                         "data": {
                                             "type": "array",
                                             "items": {
-                                                "$ref": "#/definitions/settings.Subscriber"
+                                                "$ref": "#/definitions/dto.SubscriberOutput"
                                             }
                                         }
                                     }
@@ -149,7 +149,7 @@ const docTemplate = `{
                 }
             }
         },
-        "settings.Subscriber": {
+        "dto.SubscriberOutput": {
             "type": "object",
             "properties": {
                 "apiaryId": {

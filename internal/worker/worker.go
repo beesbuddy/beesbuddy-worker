@@ -2,10 +2,10 @@ package worker
 
 import (
 	"fmt"
-	"log"
 
 	"github.com/beesbuddy/beesbuddy-worker/internal"
 	"github.com/beesbuddy/beesbuddy-worker/internal/app"
+	"github.com/beesbuddy/beesbuddy-worker/internal/log"
 	MQTT "github.com/eclipse/paho.mqtt.golang"
 	"github.com/nakabonne/tstorage"
 	"github.com/samber/lo"
@@ -18,10 +18,10 @@ type workerCtx struct {
 	queue   chan int64
 }
 
-func NewWorkersRunner(appCtx *app.Ctx) internal.ModuleCtx {
+func NewWorkersRunner(appCtx *app.Ctx) internal.Ctx {
 	storage, err := tstorage.NewStorage(
 		tstorage.WithTimestampPrecision(tstorage.Seconds),
-		tstorage.WithDataPath(appCtx.Config.GetCfg().StoragePath),
+		tstorage.WithDataPath(appCtx.Pref.GetConfig().StoragePath),
 	)
 
 	if err != nil {
@@ -35,47 +35,49 @@ func NewWorkersRunner(appCtx *app.Ctx) internal.ModuleCtx {
 	return m
 }
 
-func (m *workerCtx) Run() {
-	go func(m *workerCtx) {
-		defer m.CleanUp()
-
+func (w *workerCtx) Run() {
+	go func(w *workerCtx) {
 		for {
-			log.Println("[Re]configuring MQTT:", m.appCtx.Config.GetCfg().BrokerTCPUrl)
+			cfg := w.appCtx.Pref.GetConfig()
+			client := w.appCtx.MqttClient
+			pref := w.appCtx.Pref
 
-			if !m.appCtx.MqttClient.IsConnectionOpen() || !m.appCtx.MqttClient.IsConnected() {
-				NewConnection(m.appCtx.MqttClient)
+			log.Info.Println("[Re]configuring MQTT:", cfg.BrokerTCPUrl)
+
+			if !w.appCtx.MqttClient.IsConnectionOpen() || !client.IsConnected() {
+				NewConnection(w.appCtx.MqttClient)
 			}
 
-			m.initializeSubscribers()
+			w.initializeSubscribers()
 
-			<-m.appCtx.Config.GetSubscriber(internal.WorkerKey)
+			<-pref.GetSubscriber(internal.WorkerKey)
 
-			m.cleanUpSubscribers()
+			w.cleanUpSubscribers()
 		}
-	}(m)
+	}(w)
 }
 
-func (m *workerCtx) CleanUp() {
-	log.Println("Gracefully closing mqtt workers...")
+func (w *workerCtx) CleanUp() {
+	log.Info.Println("Gracefully closing mqtt workers...")
 
-	if m.appCtx.MqttClient.IsConnectionOpen() && m.appCtx.MqttClient.IsConnected() {
-		m.cleanUpSubscribers()
-		Disconnect(m.appCtx.MqttClient)
+	if w.appCtx.MqttClient.IsConnectionOpen() && w.appCtx.MqttClient.IsConnected() {
+		w.cleanUpSubscribers()
+		Disconnect(w.appCtx.MqttClient)
 	}
 
-	m.storage.Close()
+	w.storage.Close()
 }
 
-func (m *workerCtx) cleanUpSubscribers() {
-	for _, s := range m.appCtx.Config.GetCfg().Subscribers {
+func (w *workerCtx) cleanUpSubscribers() {
+	for _, s := range w.appCtx.Pref.GetConfig().Subscribers {
 		topic := fmt.Sprintf(internal.TopicPath, s.ApiaryId, s.HiveId)
-		topicToDelete, alreadyExists := lo.Find(m.topics, func(t string) bool {
+		topicToDelete, alreadyExists := lo.Find(w.topics, func(t string) bool {
 			return t == topic
 		})
 
 		if alreadyExists {
 			go func(topic string) {
-				m.Unsubscribe(m.appCtx.MqttClient, topicToDelete)
+				w.Unsubscribe(w.appCtx.MqttClient, topicToDelete)
 			}(topic)
 		}
 
@@ -83,7 +85,7 @@ func (m *workerCtx) cleanUpSubscribers() {
 }
 
 func (m *workerCtx) initializeSubscribers() {
-	for _, s := range m.appCtx.Config.GetCfg().Subscribers {
+	for _, s := range m.appCtx.Pref.GetConfig().Subscribers {
 		topic := fmt.Sprintf(internal.TopicPath, s.ApiaryId, s.HiveId)
 		_, alreadyExists := lo.Find(m.topics, func(t string) bool {
 			return t == topic
@@ -100,14 +102,14 @@ func (m *workerCtx) initializeSubscribers() {
 
 func (m *workerCtx) Unsubscribe(c MQTT.Client, topic string) {
 	if token := c.Unsubscribe(topic); token.Wait() && token.Error() != nil {
-		log.Fatal(token.Error())
+		log.Error.Fatal(token.Error())
 		panic(token.Error())
 	}
 }
 
 func (m *workerCtx) Subscribe(c MQTT.Client, topic string) {
 	if token := c.Subscribe(topic, 0, m.DefaultMessageHandler()); token.Wait() && token.Error() != nil {
-		log.Fatal(token.Error())
+		log.Error.Fatal(token.Error())
 		panic(token.Error())
 	}
 }

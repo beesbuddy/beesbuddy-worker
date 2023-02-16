@@ -1,6 +1,6 @@
 package internal
 
-type ModuleCtx interface {
+type Ctx interface {
 	Run()
 	CleanUp()
 }

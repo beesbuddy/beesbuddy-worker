@@ -15,7 +15,7 @@ definitions:
       hiveId:
         type: string
     type: object
-  settings.Subscriber:
+  dto.SubscriberOutput:
     properties:
       apiaryId:
         type: string
@@ -49,7 +49,7 @@ paths:
             - properties:
                 data:
                   items:
-                    $ref: '#/definitions/settings.Subscriber'
+                    $ref: '#/definitions/dto.SubscriberOutput'
                   type: array
               type: object
         "503":
@@ -81,7 +81,7 @@ paths:
             - properties:
                 data:
                   items:
-                    $ref: '#/definitions/settings.Subscriber'
+                    $ref: '#/definitions/dto.SubscriberOutput'
                   type: array
               type: object
         "503":

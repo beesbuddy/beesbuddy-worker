@@ -2,7 +2,6 @@ package web
 
 import (
 	"fmt"
-	"log"
 	"net/http"
 	"os"
 
@@ -10,6 +9,7 @@ import (
 	"github.com/beesbuddy/beesbuddy-worker/docs"
 	"github.com/beesbuddy/beesbuddy-worker/internal"
 	"github.com/beesbuddy/beesbuddy-worker/internal/app"
+	"github.com/beesbuddy/beesbuddy-worker/internal/log"
 	"github.com/gofiber/adaptor/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/fiber/v2/middleware/limiter"
@@ -24,21 +24,22 @@ type webCtx struct {
 	appCtx *app.Ctx
 }
 
-func NewWebRunner(ctx *app.Ctx) internal.ModuleCtx {
-	m := &webCtx{ctx}
-	return m
+func NewWebRunner(ctx *app.Ctx) internal.Ctx {
+	w := &webCtx{ctx}
+	return w
 }
 
-func (m *webCtx) Run() {
-	appCtx := m.appCtx
-	cfg := appCtx.Config.GetCfg()
+func (w *webCtx) Run() {
+	appCtx := w.appCtx
+	cfg := appCtx.Pref.GetConfig()
 	fiber := appCtx.Fiber
 
 	// set up handlers / middlewares
 	fiber.Use(recover.New())
 	fiber.Use(logger.New())
 
-	fiber.Get("/dashboard", monitor.New())
+	fiber.Get("/metrics", monitor.New())
+
 	fiber.Use(cors.New(cors.Config{
 		AllowOrigins: "*",
 		AllowHeaders: "Origin, Content-Type, Accept",
@@ -65,7 +66,7 @@ func (m *webCtx) Run() {
 	// settings
 	settings := apiV1.Group("/settings")
 	settings.Use(jwtware.New(jwtware.Config{
-		SigningKey:   []byte(m.appCtx.Config.GetCfg().Secret),
+		SigningKey:   []byte(cfg.Secret),
 		ErrorHandler: AuthError,
 	}))
 	settings.Get("/subscribers", ApiGetSubscribers(appCtx))
@@ -74,7 +75,7 @@ func (m *webCtx) Run() {
 	// set up static file serving
 	var docsServer http.Handler
 
-	if appCtx.Config.GetCfg().IsProd {
+	if cfg.IsProd {
 		docsFS := http.FS(docs.Files)
 		docsServer = http.FileServer(docsFS)
 	} else {
@@ -88,19 +89,20 @@ func (m *webCtx) Run() {
 	go func(m *webCtx) {
 		defer m.CleanUp()
 		if err := m.appCtx.Fiber.Listen(fmt.Sprintf("%s:%d", cfg.AppHost, cfg.AppPort)); err != nil {
-			log.Panic(err)
+			log.Error.Println(err)
+			panic(err)
 		}
-	}(m)
+	}(w)
 }
 
-func (m *webCtx) CleanUp() {
-	log.Println("Gracefully closing web...")
+func (w *webCtx) CleanUp() {
+	log.Info.Println("Gracefully closing web...")
 
 	go func() {
-		err := m.appCtx.Fiber.Shutdown()
+		err := w.appCtx.Fiber.Shutdown()
 
 		if err != nil {
-			log.Panic(err)
+			log.Error.Println(err)
 			os.Exit(1)
 		}
 	}()

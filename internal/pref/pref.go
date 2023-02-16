@@ -1,8 +1,8 @@
-package config
+package pref
 
 import "time"
 
-type AppPreferences struct {
+type AppConfig struct {
 	AppName             string       `default:"BeesBuddy Worker"`
 	AppHost             string       `default:"0.0.0.0"`
 	AppPort             int          `default:"4000"`
@@ -23,7 +23,14 @@ type Client struct {
 }
 
 type Subscriber struct {
-	ApiaryId  string    `json:"apiaryId" required:"true"`
-	HiveId    string    `json:"hiveId" required:"true"`
-	CreatedAt time.Time `json:"createdAt" required:"true"`
+	ApiaryId  string    `required:"true"`
+	HiveId    string    `required:"true"`
+	CreatedAt time.Time `required:"true"`
+}
+
+type Preferences[T any] interface {
+	UpdateConfig(T)
+	GetConfig() T
+	AddSubscriber(string)
+	GetSubscriber(string) <-chan bool
 }

@@ -1,35 +1,13 @@
 package internal
 
 import (
-	"encoding/hex"
 	"os"
 	"time"
 
-	"github.com/chmike/securecookie"
 	"github.com/golang-jwt/jwt/v4"
-	"golang.org/x/crypto/bcrypt"
 )
 
-func HashPassword(password string) (string, error) {
-	bytes, err := bcrypt.GenerateFromPassword([]byte(password), 14)
-	return string(bytes), err
-}
-
-func CheckPasswordHash(password, hash string) bool {
-	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
-	return err == nil
-}
-
-func GenerateToken() (string, error) {
-	bytes, err := securecookie.GenerateRandomKey()
-	if err != nil {
-		return "", err
-	}
-
-	return hex.EncodeToString(bytes), nil
-}
-
-func GenerateJWTToken(appClientKey, secret string) (string, error) {
+func GenerateToken(appClientKey, secret string) (string, error) {
 
 	claims := jwt.MapClaims{
 		"app_key": appClientKey,

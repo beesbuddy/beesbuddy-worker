@@ -44,7 +44,7 @@
                                         "data": {
                                             "type": "array",
                                             "items": {
-                                                "$ref": "#/definitions/settings.Subscriber"
+                                                "$ref": "#/definitions/dto.SubscriberOutput"
                                             }
                                         }
                                     }
@@ -99,7 +99,7 @@
                                         "data": {
                                             "type": "array",
                                             "items": {
-                                                "$ref": "#/definitions/settings.Subscriber"
+                                                "$ref": "#/definitions/dto.SubscriberOutput"
                                             }
                                         }
                                     }
@@ -141,7 +141,7 @@
                 }
             }
         },
-        "settings.Subscriber": {
+        "dto.SubscriberOutput": {
             "type": "object",
             "properties": {
                 "apiaryId": {
