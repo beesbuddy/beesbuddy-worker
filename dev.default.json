@@ -11,5 +11,6 @@
 	"IsPrefork": false,
 	"IsProd": false,
 	"BrokerTCPUrl": "tcp://mqtt.eclipseprojects.io:1883",
-	"Subscribers": []
+	"Subscribers": [],
+	"StorageWorkersCount": 2
 }

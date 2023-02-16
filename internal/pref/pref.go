@@ -2,7 +2,7 @@ package pref
 
 import "time"
 
-type AppConfig struct {
+type AppPreferences struct {
 	AppName             string       `default:"BeesBuddy Worker"`
 	AppHost             string       `default:"0.0.0.0"`
 	AppPort             int          `default:"4000"`
@@ -16,6 +16,8 @@ type AppConfig struct {
 	InfluxDbAccessToken string       `default:"change_it"`
 	InfluxDbURL         string       `default:"http://localhost:8086"`
 	InfluxDbOrg         string       `default:"BeesBuddy"`
+	StorageWorkersCount int          `default:"2"`
+	PartitionDuration   int64        `default:"1"`
 }
 
 type Client struct {

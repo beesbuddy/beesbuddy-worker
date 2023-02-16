@@ -1,22 +1,33 @@
 package worker
 
 import (
-	"log"
+	"encoding/json"
+
+	"github.com/beesbuddy/beesbuddy-worker/internal/log"
 
 	MQTT "github.com/eclipse/paho.mqtt.golang"
 )
 
 func (w *workerCtx) DefaultMessageHandler() MQTT.MessageHandler {
 	return func(client MQTT.Client, msg MQTT.Message) {
-		log.Printf("TOPIC: %s\n", msg.Topic())
-		log.Printf("MSG: %s\n", msg.Payload())
-		log.Println("########################################################")
+		log.Info.Println("TOPIC: ", msg.Topic())
+		log.Info.Println("MSG: ", msg.Payload())
+		log.Info.Println("########################################################")
 	}
 }
 
 func (w *workerCtx) PersistMessageHandler() MQTT.MessageHandler {
 	return func(client MQTT.Client, msg MQTT.Message) {
-		log.Printf("Received message from topic: %s\n", msg.Topic())
-		// TODO: Implement logic to store payload in tstorage engine and to send message to influxdb
+		log.Info.Println("received message from topic: ", msg.Topic())
+
+		var m metrics
+		json.Unmarshal(msg.Payload(), &m)
+
+		select {
+		case w.queue <- m:
+			log.Info.Println("sending message to queue: ", m)
+		default:
+			log.Error.Println("unable to send message")
+		}
 	}
 }

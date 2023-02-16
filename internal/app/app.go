@@ -10,11 +10,11 @@ import (
 type Ctx struct {
 	Fiber          *fiber.App
 	MqttClient     MQTT.Client
-	Pref           p.Preferences[p.AppConfig]
+	Pref           p.Preferences[p.AppPreferences]
 	InlfuxDbClient influxdb2.Client
 }
 
-func NewContext(pref p.Preferences[p.AppConfig]) *Ctx {
+func NewContext(pref p.Preferences[p.AppPreferences]) *Ctx {
 	router := fiber.New(fiber.Config{Prefork: pref.GetConfig().IsPrefork})
 
 	opts := MQTT.NewClientOptions().AddBroker(pref.GetConfig().BrokerTCPUrl).SetAutoReconnect(true)

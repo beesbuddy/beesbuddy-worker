@@ -24,7 +24,7 @@ import (
 // @in header
 // @name Authorization
 func main() {
-	config := pref.NewPreferences[pref.AppConfig](internal.GetEnv("BEESBUDDY_ENV", "dev"))
+	config := pref.NewPreferences[pref.AppPreferences](internal.GetEnv("BEESBUDDY_ENV", "dev"))
 	// inverse of control magic in context happens
 	appCtx := app.NewContext(config)
 
