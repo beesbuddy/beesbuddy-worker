@@ -4,7 +4,7 @@
 
 // Package shutdown provides a mechanism for registering handlers to be called
 // on process shutdown.
-package shutdown // import "upspin.io/shutdown"
+package starter
 
 import (
 	"fmt"
@@ -25,18 +25,18 @@ const GracePeriod = 1 * time.Minute
 // shut down. On shutdown, registered functions are run in last-in-first-out
 // order. Handle may be called concurrently.
 func Handle(onShutdown func()) {
-	shutdown.mu.Lock()
-	defer shutdown.mu.Unlock()
+	starter.mu.Lock()
+	defer starter.mu.Unlock()
 
-	shutdown.sequence = append(shutdown.sequence, onShutdown)
+	starter.sequence = append(starter.sequence, onShutdown)
 }
 
-// Now calls all registered shutdown closures in last-in-first-out order and
+// Stop calls all registered shutdown closures in last-in-first-out order and
 // terminates the process with the given status code.
 // It only executes once and guarantees termination within GracePeriod.
-// Now may be called concurrently.
-func Now(code int) {
-	shutdown.once.Do(func() {
+// Stop may be called concurrently.
+func Stop(code int) {
+	starter.once.Do(func() {
 		log.Debug.Printf("shutdown: status code %d", code)
 
 		// Ensure we terminate after a fixed amount of time.
@@ -47,9 +47,9 @@ func Now(code int) {
 			os.Exit(1)
 		}()
 
-		shutdown.mu.Lock() // No need to ever unlock.
-		for i := len(shutdown.sequence) - 1; i >= 0; i-- {
-			shutdown.sequence[i]()
+		starter.mu.Lock() // No need to ever unlock.
+		for i := len(starter.sequence) - 1; i >= 0; i-- {
+			starter.sequence[i]()
 		}
 
 		os.Exit(code)
@@ -59,16 +59,16 @@ func Now(code int) {
 // Testing hook.
 var killSleep = time.Sleep
 
-var shutdown struct {
+var starter struct {
 	mu       sync.Mutex
 	sequence []func()
 	once     sync.Once
 }
 
-func Init(code int) {
+func Ignite(code int) {
 	interrupt := make(chan os.Signal, 1)
 	signal.Notify(interrupt, os.Interrupt, syscall.SIGTERM)
 	sig := <-interrupt
 	log.Info.Printf("shutdown: process received signal %v", sig)
-	Now(code)
+	Stop(code)
 }

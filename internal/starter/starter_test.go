@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-package shutdown
+package starter
 
 import (
 	"bufio"
@@ -152,7 +152,7 @@ func testShutdownChildProcess() {
 
 	fmt.Println(shutdownMessages[0])
 
-	Now(0)
+	Stop(0)
 
 	// If for some reason Shutdown returns the test must time out.
 	select {}
