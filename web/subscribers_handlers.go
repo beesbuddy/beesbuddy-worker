@@ -4,7 +4,7 @@ import (
 	"time"
 
 	"github.com/beesbuddy/beesbuddy-worker/app"
-	"github.com/beesbuddy/beesbuddy-worker/internal/dto"
+	"github.com/beesbuddy/beesbuddy-worker/dto"
 	p "github.com/beesbuddy/beesbuddy-worker/internal/pref"
 	"github.com/gofiber/fiber/v2"
 	"github.com/samber/lo"

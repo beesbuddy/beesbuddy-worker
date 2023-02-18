@@ -1,7 +1,7 @@
 package web
 
 import (
-	"github.com/beesbuddy/beesbuddy-worker/internal/dto"
+	"github.com/beesbuddy/beesbuddy-worker/dto"
 	"github.com/gofiber/fiber/v2"
 )
 
