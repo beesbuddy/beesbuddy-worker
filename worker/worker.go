@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"github.com/beesbuddy/beesbuddy-worker/app"
-	"github.com/beesbuddy/beesbuddy-worker/internal"
+	"github.com/beesbuddy/beesbuddy-worker/constants"
 	"github.com/beesbuddy/beesbuddy-worker/internal/component"
 	"github.com/beesbuddy/beesbuddy-worker/internal/log"
 	MQTT "github.com/eclipse/paho.mqtt.golang"
@@ -38,7 +38,7 @@ func NewWorkersRunner(appCtx *app.Ctx) component.Component {
 		panic("unable to create storage")
 	}
 
-	queue := make(chan metrics, internal.WorkerChanBuffer)
+	queue := make(chan metrics, constants.WorkerChanBuffer)
 
 	w := &workerCtx{appCtx: appCtx, storage: storage, queue: queue, influxDbClient: influxDbClient}
 	NewConnection(w.appCtx.MqttClient)
@@ -60,7 +60,7 @@ func (w *workerCtx) Init() {
 
 			w.initializeSubscribers()
 
-			<-pref.GetSubscriber(internal.WorkerKey)
+			<-pref.GetSubscriber(constants.WorkerKey)
 
 			w.cleanUpSubscribers()
 		}
@@ -85,7 +85,7 @@ func (w *workerCtx) Flush() {
 
 func (w *workerCtx) cleanUpSubscribers() {
 	for _, s := range w.appCtx.Pref.GetConfig().Subscribers {
-		topic := fmt.Sprintf(internal.TopicPath, s.ApiaryId, s.HiveId)
+		topic := fmt.Sprintf(constants.TopicPath, s.ApiaryId, s.HiveId)
 		topicToDelete, alreadyExists := lo.Find(w.topics, func(t string) bool {
 			return t == topic
 		})
@@ -101,7 +101,7 @@ func (w *workerCtx) cleanUpSubscribers() {
 
 func (m *workerCtx) initializeSubscribers() {
 	for _, s := range m.appCtx.Pref.GetConfig().Subscribers {
-		topic := fmt.Sprintf(internal.TopicPath, s.ApiaryId, s.HiveId)
+		topic := fmt.Sprintf(constants.TopicPath, s.ApiaryId, s.HiveId)
 		_, alreadyExists := lo.Find(m.topics, func(t string) bool {
 			return t == topic
 		})

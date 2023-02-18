@@ -1,7 +1,7 @@
 package pref
 
 import (
-	"github.com/beesbuddy/beesbuddy-worker/internal"
+	"github.com/beesbuddy/beesbuddy-worker/constants"
 	"github.com/beesbuddy/beesbuddy-worker/internal/log"
 	"github.com/leonidasdeim/goconfig"
 	"github.com/leonidasdeim/goconfig/pkg/filehandler"
@@ -21,7 +21,7 @@ func NewPreferences[T any](configName string) *FilePreferences[T] {
 	}
 
 	// Add default subscriber
-	cfg.AddSubscriber(internal.WorkerKey)
+	cfg.AddSubscriber(constants.WorkerKey)
 
 	return &FilePreferences[T]{
 		fileConfig: cfg,

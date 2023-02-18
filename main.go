@@ -3,8 +3,8 @@ package main
 import (
 	"github.com/beesbuddy/beesbuddy-worker/app"
 	"github.com/beesbuddy/beesbuddy-worker/cmd"
-	"github.com/beesbuddy/beesbuddy-worker/internal"
-	"github.com/beesbuddy/beesbuddy-worker/internal/pref"
+	"github.com/beesbuddy/beesbuddy-worker/pref"
+	"github.com/beesbuddy/beesbuddy-worker/util"
 	"github.com/petaki/support-go/cli"
 )
 
@@ -24,7 +24,7 @@ import (
 // @in header
 // @name Authorization
 func main() {
-	config := pref.NewPreferences[pref.AppPreferences](internal.GetEnv("BEESBUDDY_ENV", "dev"))
+	config := pref.NewPreferences[pref.AppPreferences](util.GetEnv("BEESBUDDY_ENV", "dev"))
 	// inverse of control magic in context happens
 	appCtx := app.NewContext(config)
 

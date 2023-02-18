@@ -1,7 +1,7 @@
 package app
 
 import (
-	p "github.com/beesbuddy/beesbuddy-worker/internal/pref"
+	p "github.com/beesbuddy/beesbuddy-worker/pref"
 	MQTT "github.com/eclipse/paho.mqtt.golang"
 	"github.com/gofiber/fiber/v2"
 	influxdb2 "github.com/influxdata/influxdb-client-go/v2"

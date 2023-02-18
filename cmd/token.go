@@ -5,8 +5,8 @@ import (
 	"log"
 
 	"github.com/beesbuddy/beesbuddy-worker/app"
-	"github.com/beesbuddy/beesbuddy-worker/internal"
-	"github.com/beesbuddy/beesbuddy-worker/internal/pref"
+	"github.com/beesbuddy/beesbuddy-worker/pref"
+	"github.com/beesbuddy/beesbuddy-worker/util"
 	"github.com/petaki/support-go/cli"
 	"github.com/samber/lo"
 )
@@ -34,7 +34,7 @@ func Token(ctx *app.Ctx) func(*cli.Group, *cli.Command, []string) int {
 
 		secret := config.Secret
 
-		token, err := internal.GenerateToken(client.AppKey, secret)
+		token, err := util.GenerateToken(client.AppKey, secret)
 
 		if err != nil {
 			return cli.Failure

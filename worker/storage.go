@@ -6,7 +6,7 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/beesbuddy/beesbuddy-worker/internal"
+	"github.com/beesbuddy/beesbuddy-worker/constants"
 	"github.com/beesbuddy/beesbuddy-worker/internal/log"
 	influxdb2 "github.com/influxdata/influxdb-client-go/v2"
 	"github.com/nakabonne/tstorage"
@@ -23,7 +23,7 @@ func (w *workerCtx) storageWorker() {
 }
 
 func (w *workerCtx) persist(m metrics) error {
-	ctx, cancel := context.WithTimeout(context.Background(), time.Duration(internal.WorkerTimeout)*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), time.Duration(constants.WorkerTimeout)*time.Second)
 	defer cancel()
 
 	labels := []tstorage.Label{
