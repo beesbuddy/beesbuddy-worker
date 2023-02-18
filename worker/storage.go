@@ -12,7 +12,7 @@ import (
 	"github.com/nakabonne/tstorage"
 )
 
-func (w workerCtx) storageWorker() {
+func (w *workerCtx) storageWorker() {
 	for msq := range w.queue {
 		log.Debug.Println("try to persist metrics: ", msq)
 		err := w.persist(msq)
@@ -59,7 +59,7 @@ func (w *workerCtx) persist(m metrics) error {
 	return nil
 }
 
-func (w workerCtx) writeLocalMetric(name, value string, labels []tstorage.Label) error {
+func (w *workerCtx) writeLocalMetric(name, value string, labels []tstorage.Label) error {
 	log.Debug.Printf("[LocalStorage] storing [%v] metric [%s] with value [%s]", labels, name, value)
 
 	v, err := strconv.ParseFloat(value, 64)
@@ -93,7 +93,7 @@ func (w workerCtx) writeLocalMetric(name, value string, labels []tstorage.Label)
 	return nil
 }
 
-func (w workerCtx) writeInfluxDbMetric(ctx context.Context, name, value string, labels []tstorage.Label) error {
+func (w *workerCtx) writeInfluxDbMetric(ctx context.Context, name, value string, labels []tstorage.Label) error {
 	log.Debug.Printf("[InfluxDB] storing [%v] metric [%s] with value [%s]", labels, name, value)
 
 	v, err := strconv.ParseFloat(value, 64)
