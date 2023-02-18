@@ -6,9 +6,9 @@ import (
 	"os"
 
 	swagger "github.com/arsmn/fiber-swagger/v2"
+	"github.com/beesbuddy/beesbuddy-worker/app"
 	"github.com/beesbuddy/beesbuddy-worker/docs"
-	"github.com/beesbuddy/beesbuddy-worker/internal"
-	"github.com/beesbuddy/beesbuddy-worker/internal/app"
+	"github.com/beesbuddy/beesbuddy-worker/internal/component"
 	"github.com/beesbuddy/beesbuddy-worker/internal/log"
 	"github.com/gofiber/adaptor/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
@@ -24,12 +24,12 @@ type webCtx struct {
 	appCtx *app.Ctx
 }
 
-func NewWebRunner(ctx *app.Ctx) internal.Ctx {
+func NewWebRunner(ctx *app.Ctx) component.Component {
 	w := &webCtx{ctx}
 	return w
 }
 
-func (w *webCtx) Run() {
+func (w *webCtx) Init() {
 	appCtx := w.appCtx
 	cfg := appCtx.Pref.GetConfig()
 	fiber := appCtx.Fiber

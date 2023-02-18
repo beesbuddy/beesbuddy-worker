@@ -3,7 +3,7 @@ package web
 import (
 	"time"
 
-	"github.com/beesbuddy/beesbuddy-worker/internal/app"
+	"github.com/beesbuddy/beesbuddy-worker/app"
 	"github.com/beesbuddy/beesbuddy-worker/internal/dto"
 	p "github.com/beesbuddy/beesbuddy-worker/internal/pref"
 	"github.com/gofiber/fiber/v2"

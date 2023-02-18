@@ -4,8 +4,9 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/beesbuddy/beesbuddy-worker/app"
 	"github.com/beesbuddy/beesbuddy-worker/internal"
-	"github.com/beesbuddy/beesbuddy-worker/internal/app"
+	"github.com/beesbuddy/beesbuddy-worker/internal/component"
 	"github.com/beesbuddy/beesbuddy-worker/internal/log"
 	MQTT "github.com/eclipse/paho.mqtt.golang"
 	influxdb2 "github.com/influxdata/influxdb-client-go/v2"
@@ -21,7 +22,7 @@ type workerCtx struct {
 	influxDbClient influxdb2.Client
 }
 
-func NewWorkersRunner(appCtx *app.Ctx) internal.Ctx {
+func NewWorkersRunner(appCtx *app.Ctx) component.Component {
 	config := appCtx.Pref.GetConfig()
 	duration := config.PartitionDuration
 
@@ -39,12 +40,12 @@ func NewWorkersRunner(appCtx *app.Ctx) internal.Ctx {
 
 	queue := make(chan metrics, internal.WorkerChanBuffer)
 
-	m := &workerCtx{appCtx: appCtx, storage: storage, queue: queue, influxDbClient: influxDbClient}
-	NewConnection(m.appCtx.MqttClient)
-	return m
+	w := &workerCtx{appCtx: appCtx, storage: storage, queue: queue, influxDbClient: influxDbClient}
+	NewConnection(w.appCtx.MqttClient)
+	return w
 }
 
-func (w *workerCtx) Run() {
+func (w *workerCtx) Init() {
 	go func(w *workerCtx) {
 		for {
 			cfg := w.appCtx.Pref.GetConfig()

@@ -1,11 +1,11 @@
 package cmd
 
 import (
-	"github.com/beesbuddy/beesbuddy-worker/internal/app"
+	"github.com/beesbuddy/beesbuddy-worker/app"
 	"github.com/beesbuddy/beesbuddy-worker/internal/log"
 	"github.com/beesbuddy/beesbuddy-worker/internal/starter"
-	"github.com/beesbuddy/beesbuddy-worker/internal/web"
-	"github.com/beesbuddy/beesbuddy-worker/internal/worker"
+	"github.com/beesbuddy/beesbuddy-worker/web"
+	"github.com/beesbuddy/beesbuddy-worker/worker"
 	"github.com/petaki/support-go/cli"
 )
 
@@ -17,9 +17,9 @@ func WrokerServe(ctx *app.Ctx) func(*cli.Group, *cli.Command, []string) int {
 		}
 
 		workersRunner := worker.NewWorkersRunner(ctx)
-		workersRunner.Run()
+		workersRunner.Init()
 		webRunner := web.NewWebRunner(ctx)
-		webRunner.Run()
+		webRunner.Init()
 
 		// Add shutdown handlers
 		starter.Handle(webRunner.Flush)

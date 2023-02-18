@@ -1,9 +1,9 @@
 package main
 
 import (
+	"github.com/beesbuddy/beesbuddy-worker/app"
 	"github.com/beesbuddy/beesbuddy-worker/cmd"
 	"github.com/beesbuddy/beesbuddy-worker/internal"
-	"github.com/beesbuddy/beesbuddy-worker/internal/app"
 	"github.com/beesbuddy/beesbuddy-worker/internal/pref"
 	"github.com/petaki/support-go/cli"
 )

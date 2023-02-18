@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"log"
 
+	"github.com/beesbuddy/beesbuddy-worker/app"
 	"github.com/beesbuddy/beesbuddy-worker/internal"
-	"github.com/beesbuddy/beesbuddy-worker/internal/app"
 	"github.com/beesbuddy/beesbuddy-worker/internal/pref"
 	"github.com/petaki/support-go/cli"
 	"github.com/samber/lo"
