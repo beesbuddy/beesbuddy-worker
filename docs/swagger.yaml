@@ -125,6 +125,43 @@ paths:
       summary: Create a new subscriber
       tags:
       - preferences
+  /preferences/subscribers/{apiary_id}/{hive_id}:
+    delete:
+      description: Create a subscriber
+      parameters:
+      - description: Apiary Id
+        in: path
+        name: apiary_id
+        required: true
+        type: string
+      - description: Hive Id
+        in: path
+        name: hive_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/dto.ResponseHTTP'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/dto.SubscriberOutput'
+                  type: array
+              type: object
+        "503":
+          description: Service Unavailable
+          schema:
+            $ref: '#/definitions/dto.ResponseHTTP'
+      security:
+      - ApiKeyAuth: []
+      summary: Create a new subscriber
+      tags:
+      - preferences
 securityDefinitions:
   ApiKeyAuth:
     in: header

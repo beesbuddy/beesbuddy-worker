@@ -42,4 +42,5 @@ $ make build
 
 ## TODO
 
-* Implement deletion of subscriber
+* Implement file watcher to do reload when config is modified
+* Implement condiguration producer for hive to send config to IoT device of the hive 

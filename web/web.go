@@ -71,7 +71,8 @@ func (w *webCtx) Init() {
 	}))
 	settings.Get("/subscribers", ApiGetSubscribers(appCtx))
 	settings.Post("/subscribers", ApiCreateSubscriber(appCtx))
-	settings.Delete("/subscribers/:apiary_id", ApiDeleteSubscriberForApiaries(appCtx))
+	settings.Delete("/subscribers/:apiary_id", ApiDeleteSubscriberForApiary(appCtx))
+	settings.Delete("/subscribers/:apiary_id/:hive_id", ApiDeleteSubscriberForHive(appCtx))
 
 	// set up static file serving
 	var docsServer http.Handler

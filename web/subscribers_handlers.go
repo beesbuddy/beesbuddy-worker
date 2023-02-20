@@ -80,7 +80,7 @@ func ApiCreateSubscriber(ctx *app.Ctx) fiber.Handler {
 // @Param apiary_id path string true "Apiary Id"
 // @Router /preferences/subscribers/{apiary_id} [delete]
 // @Security ApiKeyAuth
-func ApiDeleteSubscriberForApiaries(ctx *app.Ctx) fiber.Handler {
+func ApiDeleteSubscriberForApiary(ctx *app.Ctx) fiber.Handler {
 	return func(f *fiber.Ctx) error {
 		apiaryId := f.Params("apiary_id")
 		pref := ctx.Pref
@@ -91,6 +91,44 @@ func ApiDeleteSubscriberForApiaries(ctx *app.Ctx) fiber.Handler {
 			return item.ApiaryId != apiaryId
 		})
 
+		pref.UpdateConfig(newConfig)
+
+		return f.JSON(dto.ResponseHTTP{
+			Success: true,
+			Message: "Registered subscribers after deletion",
+			Data: lo.Map(pref.GetConfig().Subscribers, func(s p.Subscriber, _ int) dto.SubscriberOutput {
+				return dto.SubscriberOutput(s)
+			}),
+		})
+	}
+}
+
+// Delete subscribers for aiary
+// @Summary Create a new subscriber
+// @Description Create a subscriber
+// @Tags preferences
+// @Produce json
+// @Success 200 {object} dto.ResponseHTTP{data=[]dto.SubscriberOutput}
+// @Failure 503 {object} dto.ResponseHTTP{}
+// @Param apiary_id path string true "Apiary Id"
+// @Param hive_id path string true "Hive Id"
+// @Router /preferences/subscribers/{apiary_id}/{hive_id} [delete]
+// @Security ApiKeyAuth
+func ApiDeleteSubscriberForHive(ctx *app.Ctx) fiber.Handler {
+	return func(f *fiber.Ctx) error {
+		apiaryId := f.Params("apiary_id")
+		hiveId := f.Params("hive_id")
+		pref := ctx.Pref
+		newConfig := ctx.Pref.GetConfig()
+		subscribers := newConfig.Subscribers
+
+		for index, item := range subscribers {
+			if item.ApiaryId == apiaryId && item.HiveId == hiveId {
+				subscribers = append(subscribers[:index], subscribers[index+1:]...)
+			}
+		}
+
+		newConfig.Subscribers = subscribers
 		pref.UpdateConfig(newConfig)
 
 		return f.JSON(dto.ResponseHTTP{
