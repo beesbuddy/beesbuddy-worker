@@ -13,11 +13,11 @@ import (
 // Get active subscribers
 // @Summary Get active subscribers
 // @Description Get subscribers
-// @Tags settings
+// @Tags preferences
 // @Produce json
 // @Success 200 {object} dto.ResponseHTTP{data=[]dto.SubscriberOutput}
 // @Failure 503 {object} dto.ResponseHTTP{}
-// @Router /settings/subscribers [get]
+// @Router /preferences/subscribers [get]
 // @Security ApiKeyAuth
 func ApiGetSubscribers(ctx *app.Ctx) fiber.Handler {
 	return func(f *fiber.Ctx) error {
@@ -32,12 +32,12 @@ func ApiGetSubscribers(ctx *app.Ctx) fiber.Handler {
 // Post subscriber
 // @Summary Create a new subscriber
 // @Description Create a subscriber
-// @Tags settings
+// @Tags preferences
 // @Produce json
 // @Success 200 {object} dto.ResponseHTTP{data=[]dto.SubscriberOutput}
 // @Failure 503 {object} dto.ResponseHTTP{}
 // @Param dto.SubscriberInput body dto.SubscriberInput true "Subscriber"
-// @Router /settings/subscribers [post]
+// @Router /preferences/subscribers [post]
 // @Security ApiKeyAuth
 func ApiCreateSubscriber(ctx *app.Ctx) fiber.Handler {
 	return func(f *fiber.Ctx) error {
@@ -63,6 +63,39 @@ func ApiCreateSubscriber(ctx *app.Ctx) fiber.Handler {
 		return f.JSON(dto.ResponseHTTP{
 			Success: true,
 			Message: "Registered subscriber for creation",
+			Data: lo.Map(pref.GetConfig().Subscribers, func(s p.Subscriber, _ int) dto.SubscriberOutput {
+				return dto.SubscriberOutput(s)
+			}),
+		})
+	}
+}
+
+// Delete subscribers for aiary
+// @Summary Create a new subscriber
+// @Description Create a subscriber
+// @Tags preferences
+// @Produce json
+// @Success 200 {object} dto.ResponseHTTP{data=[]dto.SubscriberOutput}
+// @Failure 503 {object} dto.ResponseHTTP{}
+// @Param apiary_id path string true "Apiary Id"
+// @Router /preferences/subscribers/{apiary_id} [delete]
+// @Security ApiKeyAuth
+func ApiDeleteSubscriberForApiaries(ctx *app.Ctx) fiber.Handler {
+	return func(f *fiber.Ctx) error {
+		apiaryId := f.Params("apiary_id")
+		pref := ctx.Pref
+		newConfig := ctx.Pref.GetConfig()
+		subscribers := newConfig.Subscribers
+
+		newConfig.Subscribers = lo.Filter(subscribers, func(item p.Subscriber, _ int) bool {
+			return item.ApiaryId != apiaryId
+		})
+
+		pref.UpdateConfig(newConfig)
+
+		return f.JSON(dto.ResponseHTTP{
+			Success: true,
+			Message: "Registered subscribers after deletion",
 			Data: lo.Map(pref.GetConfig().Subscribers, func(s p.Subscriber, _ int) dto.SubscriberOutput {
 				return dto.SubscriberOutput(s)
 			}),

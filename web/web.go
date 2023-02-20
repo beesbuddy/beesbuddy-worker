@@ -64,13 +64,14 @@ func (w *webCtx) Init() {
 	}))
 
 	// settings
-	settings := apiV1.Group("/settings")
+	settings := apiV1.Group("/preferences")
 	settings.Use(jwtware.New(jwtware.Config{
 		SigningKey:   []byte(cfg.Secret),
 		ErrorHandler: AuthError,
 	}))
 	settings.Get("/subscribers", ApiGetSubscribers(appCtx))
 	settings.Post("/subscribers", ApiCreateSubscriber(appCtx))
+	settings.Delete("/subscribers/:apiary_id", ApiDeleteSubscriberForApiaries(appCtx))
 
 	// set up static file serving
 	var docsServer http.Handler

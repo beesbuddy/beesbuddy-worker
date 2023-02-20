@@ -23,7 +23,7 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/settings/subscribers": {
+        "/preferences/subscribers": {
             "get": {
                 "security": [
                     {
@@ -35,7 +35,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "settings"
+                    "preferences"
                 ],
                 "summary": "Get active subscribers",
                 "responses": {
@@ -79,7 +79,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "settings"
+                    "preferences"
                 ],
                 "summary": "Create a new subscriber",
                 "parameters": [
@@ -91,6 +91,61 @@ const docTemplate = `{
                         "schema": {
                             "$ref": "#/definitions/dto.SubscriberInput"
                         }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/dto.ResponseHTTP"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/dto.SubscriberOutput"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "503": {
+                        "description": "Service Unavailable",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ResponseHTTP"
+                        }
+                    }
+                }
+            }
+        },
+        "/preferences/subscribers/{apiary_id}": {
+            "delete": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Create a subscriber",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "preferences"
+                ],
+                "summary": "Create a new subscriber",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Apiary Id",
+                        "name": "apiary_id",
+                        "in": "path",
+                        "required": true
                     }
                 ],
                 "responses": {
