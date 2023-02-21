@@ -8,7 +8,7 @@ import (
 	MQTT "github.com/eclipse/paho.mqtt.golang"
 )
 
-func (w *workerCtx) DefaultMessageHandler() MQTT.MessageHandler {
+func (w *workerComponent) DefaultMessageHandler() MQTT.MessageHandler {
 	return func(client MQTT.Client, msg MQTT.Message) {
 		log.Info.Println("TOPIC: ", msg.Topic())
 		log.Info.Println("MSG: ", msg.Payload())
@@ -16,7 +16,7 @@ func (w *workerCtx) DefaultMessageHandler() MQTT.MessageHandler {
 	}
 }
 
-func (w *workerCtx) PersistMessageHandler() MQTT.MessageHandler {
+func (w *workerComponent) PersistMessageHandler() MQTT.MessageHandler {
 	return func(client MQTT.Client, msg MQTT.Message) {
 		log.Info.Println("received message from topic: ", msg.Topic())
 

@@ -14,7 +14,7 @@ import (
 	"github.com/samber/lo"
 )
 
-type workerCtx struct {
+type workerComponent struct {
 	appCtx         *app.Ctx
 	storage        tstorage.Storage
 	topics         []string
@@ -40,13 +40,13 @@ func NewWorkersRunner(appCtx *app.Ctx) component.Component {
 
 	queue := make(chan metrics, constants.WorkerChanBuffer)
 
-	w := &workerCtx{appCtx: appCtx, storage: storage, queue: queue, influxDbClient: influxDbClient}
+	w := &workerComponent{appCtx: appCtx, storage: storage, queue: queue, influxDbClient: influxDbClient}
 	NewConnection(w.appCtx.MqttClient)
 	return w
 }
 
-func (w *workerCtx) Init() {
-	go func(w *workerCtx) {
+func (w *workerComponent) Init() {
+	go func(w *workerComponent) {
 		for {
 			cfg := w.appCtx.Pref.GetConfig()
 			client := w.appCtx.MqttClient
@@ -71,7 +71,7 @@ func (w *workerCtx) Init() {
 	}
 }
 
-func (w *workerCtx) Flush() {
+func (w *workerComponent) Flush() {
 	log.Info.Println("gracefully closing mqtt workers...")
 
 	if w.appCtx.MqttClient.IsConnectionOpen() && w.appCtx.MqttClient.IsConnected() {
@@ -83,7 +83,7 @@ func (w *workerCtx) Flush() {
 	w.influxDbClient.Close()
 }
 
-func (w *workerCtx) cleanUpSubscribers() {
+func (w *workerComponent) cleanUpSubscribers() {
 	for _, s := range w.appCtx.Pref.GetConfig().Subscribers {
 		topic := fmt.Sprintf(constants.TopicPath, s.ApiaryId, s.HiveId)
 		topicToDelete, alreadyExists := lo.Find(w.topics, func(t string) bool {
@@ -99,7 +99,7 @@ func (w *workerCtx) cleanUpSubscribers() {
 	}
 }
 
-func (m *workerCtx) initializeSubscribers() {
+func (m *workerComponent) initializeSubscribers() {
 	for _, s := range m.appCtx.Pref.GetConfig().Subscribers {
 		topic := fmt.Sprintf(constants.TopicPath, s.ApiaryId, s.HiveId)
 		_, alreadyExists := lo.Find(m.topics, func(t string) bool {
@@ -115,14 +115,14 @@ func (m *workerCtx) initializeSubscribers() {
 
 }
 
-func (m *workerCtx) Unsubscribe(c MQTT.Client, topic string) {
+func (m *workerComponent) Unsubscribe(c MQTT.Client, topic string) {
 	if token := c.Unsubscribe(topic); token.Wait() && token.Error() != nil {
 		log.Error.Fatal(token.Error())
 		panic(token.Error())
 	}
 }
 
-func (w *workerCtx) Subscribe(c MQTT.Client, topic string) {
+func (w *workerComponent) Subscribe(c MQTT.Client, topic string) {
 	if token := c.Subscribe(topic, 0, w.PersistMessageHandler()); token.Wait() && token.Error() != nil {
 		log.Error.Fatal(token.Error())
 		panic(token.Error())

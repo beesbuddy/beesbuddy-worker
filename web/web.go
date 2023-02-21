@@ -20,16 +20,16 @@ import (
 	"github.com/gofiber/redirect/v2"
 )
 
-type webCtx struct {
+type webComponent struct {
 	appCtx *app.Ctx
 }
 
 func NewWebRunner(ctx *app.Ctx) component.Component {
-	w := &webCtx{ctx}
+	w := &webComponent{ctx}
 	return w
 }
 
-func (w *webCtx) Init() {
+func (w *webComponent) Init() {
 	appCtx := w.appCtx
 	cfg := appCtx.Pref.GetConfig()
 	fiber := appCtx.Fiber
@@ -69,10 +69,10 @@ func (w *webCtx) Init() {
 		SigningKey:   []byte(cfg.Secret),
 		ErrorHandler: AuthError,
 	}))
-	settings.Get("/subscribers", ApiGetSubscribers(appCtx))
-	settings.Post("/subscribers", ApiCreateSubscriber(appCtx))
-	settings.Delete("/subscribers/:apiary_id", ApiDeleteSubscriberForApiary(appCtx))
-	settings.Delete("/subscribers/:apiary_id/:hive_id", ApiDeleteSubscriberForHive(appCtx))
+	settings.Get("/subscribers", w.apiGetSubscribers)
+	settings.Post("/subscribers", w.apiCreateSubscriber)
+	settings.Delete("/subscribers/:apiary_id", w.apiDeleteSubscriberForApiary)
+	settings.Delete("/subscribers/:apiary_id/:hive_id", w.apiDeleteSubscriberForHive)
 
 	// set up static file serving
 	var docsServer http.Handler
@@ -88,7 +88,7 @@ func (w *webCtx) Init() {
 		return docsServer
 	}))
 
-	go func(w *webCtx) {
+	go func(w *webComponent) {
 		if err := w.appCtx.Fiber.Listen(fmt.Sprintf("%s:%d", cfg.AppHost, cfg.AppPort)); err != nil {
 			log.Error.Println(err)
 			panic(err)
@@ -96,7 +96,7 @@ func (w *webCtx) Init() {
 	}(w)
 }
 
-func (w *webCtx) Flush() {
+func (w *webComponent) Flush() {
 	log.Info.Println("gracefully closing web...")
 
 	go func() {
