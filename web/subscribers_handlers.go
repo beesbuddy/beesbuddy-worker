@@ -1,8 +1,6 @@
 package web
 
 import (
-	"time"
-
 	"github.com/beesbuddy/beesbuddy-worker/dto"
 	p "github.com/beesbuddy/beesbuddy-worker/pref"
 	"github.com/gofiber/fiber/v2"
@@ -37,29 +35,29 @@ func (w *webComponent) apiGetSubscribers(f *fiber.Ctx) error {
 // @Router /preferences/subscribers [post]
 // @Security ApiKeyAuth
 func (w *webComponent) apiCreateSubscriber(f *fiber.Ctx) error {
-
 	newSubscriber := &dto.SubscriberInput{}
-	pref := w.appCtx.Pref
 
 	if err := f.BodyParser(newSubscriber); err != nil {
-		return f.Status(500).JSON(fiber.Map{"status": "error", "message": "Review your input", "data": err})
+		return f.Status(fiber.StatusBadRequest).JSON(dto.ResponseHTTP{
+			Success: false,
+			Message: err.Error(),
+			Data:    nil,
+		})
 	}
 
-	newConfig := pref.GetConfig()
-
-	_, alreadyExists := lo.Find(newConfig.Subscribers, func(s p.Subscriber) bool {
-		return s.ApiaryId == newSubscriber.ApiaryId && s.HiveId == newSubscriber.HiveId
-	})
-
-	if !alreadyExists {
-		subscriber := p.Subscriber{ApiaryId: newSubscriber.ApiaryId, HiveId: newSubscriber.HiveId, CreatedAt: time.Now()}
-		newConfig.Subscribers = append(newConfig.Subscribers, subscriber)
-		pref.UpdateConfig(newConfig)
+	if err := w.createSubscriberForHive(*newSubscriber); err != nil {
+		return f.Status(fiber.StatusConflict).JSON(dto.ResponseHTTP{
+			Success: false,
+			Message: err.Error(),
+			Data:    nil,
+		})
 	}
 
-	return f.JSON(dto.ResponseHTTP{
+	pref := w.appCtx.Pref
+
+	return f.Status(fiber.StatusCreated).JSON(dto.ResponseHTTP{
 		Success: true,
-		Message: "Registered subscriber for creation",
+		Message: "registered subscriber for creation",
 		Data: lo.Map(pref.GetConfig().Subscribers, func(s p.Subscriber, _ int) dto.SubscriberOutput {
 			return dto.SubscriberOutput(s)
 		}),
@@ -77,7 +75,6 @@ func (w *webComponent) apiCreateSubscriber(f *fiber.Ctx) error {
 // @Router /preferences/subscribers/{apiary_id} [delete]
 // @Security ApiKeyAuth
 func (w *webComponent) apiDeleteSubscriberForApiary(f *fiber.Ctx) error {
-
 	apiaryId := f.Params("apiary_id")
 	pref := w.appCtx.Pref
 	newConfig := w.appCtx.Pref.GetConfig()
@@ -91,7 +88,7 @@ func (w *webComponent) apiDeleteSubscriberForApiary(f *fiber.Ctx) error {
 
 	return f.JSON(dto.ResponseHTTP{
 		Success: true,
-		Message: "Registered subscribers after deletion",
+		Message: "registered subscribers after deletion",
 		Data: lo.Map(pref.GetConfig().Subscribers, func(s p.Subscriber, _ int) dto.SubscriberOutput {
 			return dto.SubscriberOutput(s)
 		}),
@@ -128,7 +125,7 @@ func (w *webComponent) apiDeleteSubscriberForHive(f *fiber.Ctx) error {
 
 	return f.JSON(dto.ResponseHTTP{
 		Success: true,
-		Message: "Registered subscribers after deletion",
+		Message: "registered subscribers after deletion",
 		Data: lo.Map(pref.GetConfig().Subscribers, func(s p.Subscriber, _ int) dto.SubscriberOutput {
 			return dto.SubscriberOutput(s)
 		}),
