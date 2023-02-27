@@ -29,9 +29,32 @@ func (w webComponent) createSubscriberForHive(subscriberInput dto.SubscriberInpu
 }
 
 func (w webComponent) deleteSubscriberForApiary(apiaryId string) error {
+	pref := w.appCtx.Pref
+	newConfig := pref.GetConfig()
+	subscribers := newConfig.Subscribers
+
+	newConfig.Subscribers = lo.Filter(subscribers, func(item p.Subscriber, _ int) bool {
+		return item.ApiaryId != apiaryId
+	})
+
+	pref.UpdateConfig(newConfig)
+
 	return nil
 }
 
 func (w webComponent) deleteSubscriberForHive(apiaryId, hiveId string) error {
+	pref := w.appCtx.Pref
+	newConfig := w.appCtx.Pref.GetConfig()
+	subscribers := newConfig.Subscribers
+
+	for index, item := range subscribers {
+		if item.ApiaryId == apiaryId && item.HiveId == hiveId {
+			subscribers = append(subscribers[:index], subscribers[index+1:]...)
+		}
+	}
+
+	newConfig.Subscribers = subscribers
+	pref.UpdateConfig(newConfig)
+
 	return nil
 }

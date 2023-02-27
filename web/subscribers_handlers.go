@@ -77,14 +77,8 @@ func (w *webComponent) apiCreateSubscriber(f *fiber.Ctx) error {
 func (w *webComponent) apiDeleteSubscriberForApiary(f *fiber.Ctx) error {
 	apiaryId := f.Params("apiary_id")
 	pref := w.appCtx.Pref
-	newConfig := w.appCtx.Pref.GetConfig()
-	subscribers := newConfig.Subscribers
 
-	newConfig.Subscribers = lo.Filter(subscribers, func(item p.Subscriber, _ int) bool {
-		return item.ApiaryId != apiaryId
-	})
-
-	pref.UpdateConfig(newConfig)
+	w.deleteSubscriberForApiary(apiaryId)
 
 	return f.JSON(dto.ResponseHTTP{
 		Success: true,
@@ -107,21 +101,11 @@ func (w *webComponent) apiDeleteSubscriberForApiary(f *fiber.Ctx) error {
 // @Router /preferences/subscribers/{apiary_id}/{hive_id} [delete]
 // @Security ApiKeyAuth
 func (w *webComponent) apiDeleteSubscriberForHive(f *fiber.Ctx) error {
-
 	apiaryId := f.Params("apiary_id")
 	hiveId := f.Params("hive_id")
 	pref := w.appCtx.Pref
-	newConfig := w.appCtx.Pref.GetConfig()
-	subscribers := newConfig.Subscribers
 
-	for index, item := range subscribers {
-		if item.ApiaryId == apiaryId && item.HiveId == hiveId {
-			subscribers = append(subscribers[:index], subscribers[index+1:]...)
-		}
-	}
-
-	newConfig.Subscribers = subscribers
-	pref.UpdateConfig(newConfig)
+	w.deleteSubscriberForHive(apiaryId, hiveId)
 
 	return f.JSON(dto.ResponseHTTP{
 		Success: true,
