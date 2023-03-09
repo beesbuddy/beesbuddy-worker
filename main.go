@@ -24,8 +24,22 @@ import (
 // @in header
 // @name Authorization
 func main() {
-	config := pref.NewPreferences[pref.AppPreferences](util.GetEnv("BEESBUDDY_ENV", "dev"))
-	// inverse of control magic in context happens
+	// Initialize configuration with default values
+	configPath := util.GetEnv("BB_CONFIG_PATH", "./")
+	environmentName := util.GetEnv("BB_ENV_NAME", "dev")
+	persistedDataPath := util.GetEnv("BB_DATA_PATH", "./data")
+
+	config := pref.NewPreferences[pref.AppPreferences](
+		configPath,
+		environmentName,
+	)
+
+	// Update configuration with env variables
+	newConfig := config.GetConfig()
+	newConfig.StoragePath = persistedDataPath
+	config.UpdateConfig(newConfig)
+
+	// Create applicaiton context, inverse of control magic in context happens here
 	appCtx := app.NewContext(config)
 
 	(&cli.App{

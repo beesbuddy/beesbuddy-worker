@@ -5,8 +5,8 @@ import (
 )
 
 func NewConnection(mqttClient MQTT.Client) {
-	if token := mqttClient.Connect(); token.Wait() && token.Error() != nil {
-		panic(token.Error())
+	if connection := mqttClient.Connect(); connection.Wait() && connection.Error() != nil {
+		panic(connection.Error())
 	}
 }
 

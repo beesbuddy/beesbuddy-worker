@@ -4,15 +4,15 @@ import (
 	"github.com/beesbuddy/beesbuddy-worker/constants"
 	"github.com/beesbuddy/beesbuddy-worker/internal/log"
 	"github.com/leonidasdeim/goconfig"
-	"github.com/leonidasdeim/goconfig/pkg/filehandler"
+	fileHandler "github.com/leonidasdeim/goconfig/pkg/filehandler"
 )
 
 type FilePreferences[T any] struct {
 	fileConfig *goconfig.Config[T]
 }
 
-func NewPreferences[T any](configName string) *FilePreferences[T] {
-	h, _ := filehandler.New(filehandler.WithName(configName))
+func NewPreferences[T any](path, name string) *FilePreferences[T] {
+	h, _ := fileHandler.New(fileHandler.WithPath(path), fileHandler.WithName(name))
 	cfg, err := goconfig.Init[T](h)
 
 	if err != nil {

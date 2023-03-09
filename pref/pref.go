@@ -4,7 +4,7 @@ import "time"
 
 type AppPreferences struct {
 	AppName             string       `default:"BeesBuddy Worker"`
-	AppHost             string       `default:"0.0.0.0"`
+	AppHost             string       `default:"lohalhost"`
 	AppPort             int          `default:"4000"`
 	Clients             []Client     `required:"true"`
 	Secret              string       `required:"true"`
@@ -14,7 +14,7 @@ type AppPreferences struct {
 	Subscribers         []Subscriber `required:"false"`
 	StoragePath         string       `default:"./data"`
 	InfluxDbAccessToken string       `default:"change_it"`
-	InfluxDbURL         string       `default:"http://localhost:8086"`
+	InfluxDbURL         string       `default:"https://us-east-1-1.aws.cloud2.influxdata.com"`
 	InfluxDbOrg         string       `default:"BeesBuddy"`
 	InfluxDbBucket      string       `default:"apiaries"`
 	StorageWorkersCount int          `default:"2"`

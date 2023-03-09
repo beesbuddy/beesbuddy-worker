@@ -1,17 +1,20 @@
-BINARY=beesbuddy-worker
+APP_NAME = beesbuddy-worker
 
 clean:
-	if [ -f ${BINARY} ] ; then rm ${BINARY} ; fi
+	if [ -f ${APP_NAME} ] ; then rm ${APP_NAME} ; fi
 
 swag:
 	swag init;
 
 build:
 	swag init;
-	go build -o ${BINARY} .;
+	go build -o ${APP_NAME} .;
+
+build-image:
+	docker build -t ${APP_NAME} .
 
 dev:
-	 air -c dev.air.default.toml worker serve
+	air -c dev.air.default.toml worker serve
 
 token:
 	go run main.go make token e641c5f30441812f79130ff0518fbff2
