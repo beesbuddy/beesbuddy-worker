@@ -12,5 +12,9 @@
 	"IsProd": false,
 	"BrokerTCPUrl": "tcp://mqtt.eclipseprojects.io:1883",
 	"Subscribers": [],
-	"StorageWorkersCount": 2
+	"StorageWorkersCount": 2,
+	"InfluxDbAccessToken": "change_it",
+	"InfluxDbURL": "https://us-east-1-1.aws.cloud2.influxdata.com",
+	"InfluxDbOrg": "BeesBuddy",
+	"InfluxDbBucket": "apiaries"
 }

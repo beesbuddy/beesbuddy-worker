@@ -13,10 +13,10 @@ type AppPreferences struct {
 	BrokerTCPUrl        string       `requred:"true"`
 	Subscribers         []Subscriber `required:"false"`
 	StoragePath         string       `default:"./data"`
-	InfluxDbAccessToken string       `default:"change_it"`
-	InfluxDbURL         string       `default:"https://us-east-1-1.aws.cloud2.influxdata.com"`
-	InfluxDbOrg         string       `default:"BeesBuddy"`
-	InfluxDbBucket      string       `default:"apiaries"`
+	InfluxDbAccessToken string       `requred:"true"`
+	InfluxDbURL         string       `requred:"true"`
+	InfluxDbOrg         string       `requred:"true"`
+	InfluxDbBucket      string       `requred:"true"`
 	StorageWorkersCount int          `default:"2"`
 	PartitionDuration   int64        `default:"1"`
 }
