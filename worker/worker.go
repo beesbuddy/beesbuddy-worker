@@ -39,9 +39,8 @@ func NewWorkersRunner(appCtx *app.Ctx) component.Component {
 	}
 
 	queue := make(chan metrics, constants.WorkerChanBuffer)
-
 	w := &workerComponent{appCtx: appCtx, storage: storage, queue: queue, influxDbClient: influxDbClient}
-	NewConnection(w.appCtx.MqttClient)
+
 	return w
 }
 
@@ -55,13 +54,11 @@ func (w *workerComponent) Init() {
 			log.Info.Println("[re]configuring MQTT:", cfg.BrokerTCPUrl)
 
 			if !w.appCtx.MqttClient.IsConnectionOpen() || !client.IsConnected() {
-				NewConnection(w.appCtx.MqttClient)
+				w.NewConnection(w.appCtx.MqttClient)
 			}
 
 			w.initializeSubscribers()
-
 			<-pref.GetSubscriber(constants.WorkerKey)
-
 			w.cleanUpSubscribers()
 		}
 	}(w)
@@ -76,7 +73,7 @@ func (w *workerComponent) Flush() {
 
 	if w.appCtx.MqttClient.IsConnectionOpen() && w.appCtx.MqttClient.IsConnected() {
 		w.cleanUpSubscribers()
-		Disconnect(w.appCtx.MqttClient)
+		w.Disconnect(w.appCtx.MqttClient)
 	}
 
 	w.storage.Close()
