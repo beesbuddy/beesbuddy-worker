@@ -3,6 +3,7 @@ package main
 import (
 	"github.com/beesbuddy/beesbuddy-worker/app"
 	"github.com/beesbuddy/beesbuddy-worker/cmd"
+	"github.com/beesbuddy/beesbuddy-worker/constants"
 	"github.com/beesbuddy/beesbuddy-worker/pref"
 	"github.com/beesbuddy/beesbuddy-worker/util"
 	"github.com/petaki/support-go/cli"
@@ -41,6 +42,9 @@ func main() {
 
 	// Create applicaiton context, inverse of control magic in context happens here
 	appCtx := app.NewContext(config)
+
+	// Add subscriber for worker
+	config.AddSubscriber(constants.WorkerKey)
 
 	(&cli.App{
 		Name:    "BeesBuddy",

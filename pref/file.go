@@ -1,7 +1,6 @@
 package pref
 
 import (
-	"github.com/beesbuddy/beesbuddy-worker/constants"
 	"github.com/beesbuddy/beesbuddy-worker/internal/log"
 	"github.com/leonidasdeim/goconfig"
 	fileHandler "github.com/leonidasdeim/goconfig/pkg/filehandler"
@@ -19,9 +18,6 @@ func NewPreferences[T any](path, name string) *FilePreferences[T] {
 		log.Error.Fatal("unable to load config")
 		panic("unable to load config")
 	}
-
-	// Add default subscriber
-	cfg.AddSubscriber(constants.WorkerKey)
 
 	return &FilePreferences[T]{
 		fileConfig: cfg,

@@ -12,7 +12,7 @@ func (w *workerComponent) NewConnection(mqttClient MQTT.Client) {
 	for connection := mqttClient.Connect(); connection.Wait() && connection.Error() != nil; {
 		log.Error.Println(connection.Error())
 		t := time.Duration(count * int(time.Second))
-		log.Info.Printf("retrying the MQTT connection in %d seconds...\n", int(t.Abs().Seconds()))
+		log.Info.Println("retrying the MQTT connection in", int(t.Abs().Seconds()), "seconds...")
 
 		time.Sleep(t)
 
@@ -21,6 +21,7 @@ func (w *workerComponent) NewConnection(mqttClient MQTT.Client) {
 			count = 1
 		}
 	}
+	log.Info.Println("successfully connected to MQTT:", w.appCtx.Pref.GetConfig().BrokerTCPUrl)
 }
 
 func (w *workerComponent) Disconnect(mqttClient MQTT.Client) {

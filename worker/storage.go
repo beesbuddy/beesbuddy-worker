@@ -101,8 +101,10 @@ func (w *workerComponent) writeInfluxDbMetric(ctx context.Context, name, value s
 	if err != nil {
 		return fmt.Errorf("unable to parse metric for: %v", w)
 	} else {
-		org := w.appCtx.Pref.GetConfig().InfluxDbOrg
-		bucket := w.appCtx.Pref.GetConfig().InfluxDbBucket
+		config := w.appCtx.Pref.GetConfig()
+		org := config.InfluxDbOrg
+		bucket := config.InfluxDbBucket
+
 		writeAPI := w.influxDbClient.WriteAPIBlocking(org, bucket)
 		point := influxdb2.NewPointWithMeasurement(name)
 
